@@ -1,0 +1,4 @@
+fahinstall
+==========
+
+Folding@Home installer
