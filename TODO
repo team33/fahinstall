@@ -1,0 +1,14 @@
+Last updated - 3/17/2013 (musky)
+
+- Langouste support
+- Samba setup support
+- Integrate backup/restore scripts (fahcontrol?)
+- Start/Stop scripts (fahcontrol?)
+- client.cfg as input params or from file
+- network install
+- F@H as a service or auto-start w/screen option
+- Show IP address for ssh connection somehow 
+- Mini monitor (current unit, tpf, % complete)
+- Install log?
+- Pastebinit support
+- Interactive - pick what the script sets up (langouste/samba/screen/ssh/etc)
