@@ -20,7 +20,8 @@ The script will:
 8. Download all SMP cores
 9. Install thekraken wrapper and wrap all cores
 10. Run the Folding@Home client in -configonly mode to allow you to configure
-11. Install screen an openssh-server
+11. Install screen, openssh-server, mcelog, and samba
+12. Share ~/fah for remote monitoring
 
 Please post questions/comments/suggestions in the HardOCP Distributed Computing
 Forum (http://hardforum.com/forumdisplay.php?f=32).
