@@ -125,8 +125,8 @@ sudo -u $SUDO_USER ./fah6 -configonly || true
 echo
 
 #install software
-echo ==== Installing ssh, screen, samba, and mcelog...
-apt-get install -qq openssh-server screen samba mcelog
+echo ==== Installing ssh, screen, samba, mcelog, and pastebinit...
+apt-get install -qq openssh-server screen samba mcelog pastebinit
 
 #set up user share
 echo ==== Setting up samba...
