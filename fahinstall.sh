@@ -130,7 +130,7 @@ apt-get install -qq openssh-server screen samba mcelog
 
 #set up user share
 echo ==== Setting up samba...
-sudo -u $SUDO_USER net usershare add fah $(eval echo ~$SUDO_USER/fah) "" "Everyone:f" "guest_ok=y"
+sudo -u $SUDO_USER net usershare add fah $TARGET "" "Everyone:f" "guest_ok=y"
 
 #update smb.conf - security = share (no p/w required to connect)
 cp -a /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
