@@ -138,6 +138,9 @@ testparm -s | grep -v '^\tsecurity =' | sed -e 's/\[global]/&\n\tsecurity = shar
 mv /tmp/smbconf-$SUDO_USER.$$ /etc/samba/smb.conf
 
 echo
+echo Your IP Address: $(ip route get 8.8.8.8 | sed -ne '{s/^.*src.//;p;q}')
+echo Your machine name: $HOSTNAME
+echo
 echo Done. Please reboot your system now.
 
 trap - EXIT
