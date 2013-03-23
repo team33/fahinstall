@@ -101,7 +101,7 @@ chmod +x FahCore*
 chown -R $SUDO_USER:$(id -g $SUDO_USER) .
 
 #install software
-echo ==== Installing ssh, screen, samba, mcelog, and pastebinit...
+echo ==== Installing required software...
 apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
 
 #install thekraken
