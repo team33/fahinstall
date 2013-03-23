@@ -100,6 +100,10 @@ done
 chmod +x FahCore*
 chown -R $SUDO_USER:$(id -g $SUDO_USER) .
 
+#install software
+echo ==== Installing ssh, screen, samba, mcelog, and pastebinit...
+apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
+
 #install thekraken
 echo ==== Installing thekraken...
 rm -fr /tmp/thekraken-$SUDO_USER.$$
@@ -123,10 +127,6 @@ sudo -u $SUDO_USER thekraken -i
 echo ==== Running F@H config...
 sudo -u $SUDO_USER ./fah6 -configonly || true
 echo
-
-#install software
-echo ==== Installing ssh, screen, samba, mcelog, and pastebinit...
-apt-get install -qq openssh-server screen samba mcelog pastebinit
 
 #set up user share
 echo ==== Setting up samba...
