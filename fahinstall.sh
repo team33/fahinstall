@@ -59,7 +59,7 @@ mount -a
 echo ==== Setting up backup and restore scripts...
 cd /usr/bin
 rm -f fahbackup fahrestore
-wget -nv https://raw.github.com/darkswarm/fahinstall/master/fahbackup https://raw.github.com/darkswarm/fahinstall/master/fahbackup
+wget -nv https://raw.github.com/darkswarm/fahinstall/master/fahbackup https://raw.github.com/darkswarm/fahinstall/master/fahrestore
 chmod +x fahbackup fahrestore
 
 #update rc.local with fahrestore
