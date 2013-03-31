@@ -39,9 +39,9 @@ fi
 echo ==== Applying 12.04 tweaks...
 update-rc.d ondemand disable
 sed -i -e 's/^ENABLED.*$/ENABLED="0"/' /etc/default/irqbalance
-echo kernel.randomize_va_space=0 > /etc/sysctl.d/99-fah
-echo kernel.panic=3600 >> /etc/sysctl.d/99-fah
-echo kernel.print-fatal-signals=1 >> /etc/sysctl.d/99-fah
+echo kernel.randomize_va_space=0 > /etc/sysctl.d/99-fah.conf
+echo kernel.panic=3600 >> /etc/sysctl.d/99-fah.conf
+echo kernel.print-fatal-signals=1 >> /etc/sysctl.d/99-fah.conf
 
 #create fah directory
 echo ==== Creating fah directory...
