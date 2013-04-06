@@ -140,6 +140,7 @@ mv /tmp/smbconf-$SUDO_USER.$$ /etc/samba/smb.conf
 #get fahdiag
 echo ==== Installing fahdiag...
 cd /usr/bin
+rm -f fahdiag
 wget -nv https://raw.github.com/team33/fahdiag/master/fahdiag
 chmod +x fahdiag
 
