@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ -z "$LOGNAME" ]; then
+	echo \$LOGNAME is not set. Cannot run.
+	exit 1
+fi
+
+USE_PREVIOUS=0
+if [ -n "$1" ]; then
+	if [ "$1" != "previous" ]; then
+		echo ERROR: unknown argument -- $1
+		exit 1
+	fi
+	USE_PREVIOUS=1
+fi
+
+eval "cd ~$LOGNAME"
+
+if ! mount | grep " on $PWD/fah type tmpfs" > /dev/null ; then
+	echo "$PWD"/fah not mounted. Cannot run.
+	exit 1
+fi
+
+if ls fah/* > /dev/null 2>&1 ; then
+	echo "$PWD"/fah not empty. Cannot run.
+	exit 1
+fi
+
+cd fah
+if [ $USE_PREVIOUS = 0 ]; then
+	echo restoring...
+	tar --strip-components=1 -xf "$(ls -rt ../fahbackup-data/current/*.tar 2> /dev/null | tail -1)"
+	RET=$?
+else
+	RET=1
+fi
+
+if [ $RET -ne 0 ]; then
+	echo restoring previous...
+	rm -r ../fah 2> /dev/null
+	tar --strip-components=1 -xf "$(ls -rt ../fahbackup-data/previous/*.tar 2> /dev/null | tail -1)"
+fi
+
+echo completed

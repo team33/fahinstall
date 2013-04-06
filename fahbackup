@@ -1,0 +1,86 @@
+#!/bin/bash
+#Back up $HOME/fah to $HOME/fahbackup-data
+#Revision History
+#11-09-12 - Created (DC)
+
+#
+# Note: /tmp/fahrestore-"$LOGNAME"-completed must exist for this script
+#       to run; it is normally created by fahrestore script. Said file
+#       should normally be created by user only once: post installation --
+#       to "jumpstart" the backup script
+#
+
+if [ -z "$LOGNAME" ]; then
+	echo \$LOGNAME is not set. Cannot run.
+	exit 1
+fi
+
+eval "cd ~$LOGNAME"
+
+if ! ls fah/* > /dev/null 2>&1 ; then
+	echo "$PWD"/fah empty. Cannot run.
+	exit 1
+fi
+
+rm -fr fahbackup-data/wip
+mkdir -p fahbackup-data/wip
+
+#
+#Find current WU
+file=$(ls -rt fah/work/*.ckp 2> /dev/null | tail -1)
+if [ -n "$file" ]; then
+	# determine checkpointing interval
+	ckpt=`cat fah/client.cfg | grep checkpoint`
+	if [ -z "$ckpt" ]; then
+	        intv=900
+	else
+	        intv=$(($((${ckpt:11:2}))*60))
+	fi
+
+	#
+	#Find last update and now
+	last=$(stat -c "%Y" $file)
+	now=$(date +%s)
+
+	#
+	# only backup if we weren't restarted
+	echo now-last: $((now-last))
+	echo intv: $((intv))
+	#
+	# if we are less than 1 minute from writing
+	# or if we've just written a checkpoint then
+	# wait one minute
+	while [ $((now-last)) -lt $((intv+60)) -a \( $((now-last)) -gt $((intv-60)) -o $((now-last)) -lt 60 \) ]; do
+		echo sleeping...
+		sleep 60
+		last=$(stat -c "%Y" $file)
+		now=$(date +%s)
+		echo now-last: $((now-last))
+		echo intv: $((intv))
+	done
+fi
+
+#
+#Back up fah directory
+date=$(date +%Y-%m-%d-%H%M)
+echo backing up...
+tar -cf fahbackup-data/wip/$date.tar fah
+tar -tf fahbackup-data/wip/$date.tar > /dev/null
+RET=$?
+if [ $RET -ne 0 ]; then
+	echo backup failed!
+	exit 1
+fi
+
+CURRENT=$(ls fahbackup-data/current 2> /dev/null)
+if [ -n "$CURRENT" ]; then
+	#
+	#Remove previous
+	rm -fr fahbackup-data/previous
+	#
+	#Move current to previous
+	mv fahbackup-data/current fahbackup-data/previous 2> /dev/null
+else
+	rm -fr fahbackup-data/current
+fi
+mv fahbackup-data/wip fahbackup-data/current
