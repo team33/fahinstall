@@ -137,6 +137,13 @@ cp -a /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
 testparm -s | grep -v '^\tsecurity =' | sed -e 's/\[global]/&\n\tsecurity = share/' > /tmp/smbconf-$SUDO_USER.$$
 mv /tmp/smbconf-$SUDO_USER.$$ /etc/samba/smb.conf
 
+#get fahdiag
+echo ==== Installing fahdiag...
+cd /usr/bin
+wget https://raw.github.com/team33/fahdiag/master/fahdiag
+chmod +x fahdiag
+
+# Finishing up...
 echo
 echo Your IP Address: $(ip route get 8.8.8.8 | sed -ne '{s/^.*src.//;p;q}')
 echo Your machine name: $HOSTNAME
