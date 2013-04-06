@@ -5,9 +5,10 @@ Kris Rusocki <kszysiu@gmail.com>
 Copyright (c) 2013
 
 Usage:
-1. Download the script (http://musky.dyndns.info/fah/fahinstall/current/)
-2. Make the script executable (chmod +x fahinstall*)
-3. Run the sript as root (sudo ./fahinstall*)
+1. Download the script
+   (https://raw.github.com/team33/fahinstall/master/fahinstall.sh)
+2. Make the script executable (chmod +x fahinstall.sh)
+3. Run the sript as root (sudo ./fahinstall.sh)
 
 The script will:
 1. Create a directory ~/fah

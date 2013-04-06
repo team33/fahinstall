@@ -59,7 +59,7 @@ mount -a
 echo ==== Setting up backup and restore scripts...
 cd /usr/bin
 rm -f fahbackup fahrestore
-wget -nv https://raw.github.com/darkswarm/fahinstall/master/fahbackup https://raw.github.com/darkswarm/fahinstall/master/fahrestore
+wget -nv https://raw.github.com/team33/fahinstall/master/fahbackup https://raw.github.com/team33/fahinstall/master/fahrestore
 chmod +x fahbackup fahrestore
 
 #update rc.local with fahrestore
@@ -109,7 +109,7 @@ echo ==== Installing thekraken...
 rm -fr /tmp/thekraken-$SUDO_USER.$$
 mkdir /tmp/thekraken-$SUDO_USER.$$
 cd /tmp/thekraken-$SUDO_USER.$$
-wget -nv https://github.com/darkswarm/thekraken/archive/master.tar.gz
+wget -nv https://github.com/team33/thekraken/archive/master.tar.gz
 mkdir src
 cd src
 tar xzf ../master.tar.gz
