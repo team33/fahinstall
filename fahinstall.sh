@@ -2,6 +2,12 @@
 #FAH Install script
 # 3/16/2013 - created
 
+BRANCH=released
+#BRANCH=master
+
+FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$BRANCH
+FAHDIAG_REPO=https://raw.github.com/team33/fahdiag/$BRANCH
+
 trap "echo Premature exit." EXIT
 
 if [ "$(id -ru)" != "0" ]; then
@@ -59,7 +65,7 @@ mount -a
 echo ==== Setting up backup and restore scripts...
 cd /usr/bin
 rm -f fahbackup fahrestore
-wget -nv https://raw.github.com/team33/fahinstall/master/fahbackup https://raw.github.com/team33/fahinstall/master/fahrestore
+wget -nv $FAHBACKUP_REPO/fahbackup $FAHBACKUP_REPO/fahrestore
 chmod +x fahbackup fahrestore
 
 #update rc.local with fahrestore
@@ -141,7 +147,7 @@ mv /tmp/smbconf-$SUDO_USER.$$ /etc/samba/smb.conf
 echo ==== Installing fahdiag...
 cd /usr/bin
 rm -f fahdiag
-wget -nv https://raw.github.com/team33/fahdiag/master/fahdiag
+wget -nv $FAHDIAG_REPO/fahdiag
 chmod +x fahdiag
 
 # Finishing up...
