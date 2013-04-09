@@ -1,6 +1,8 @@
 #!/bin/bash -e
-#FAH Install script
-# 3/16/2013 - created
+#
+# fahinstall 0.1
+# Folding@Home install script
+# 
 
 BRANCH=released
 #BRANCH=master
