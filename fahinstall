@@ -120,8 +120,8 @@ cd /tmp/thekraken-$SUDO_USER.$$
 wget -nv http://darkswarm.org/thekraken/thekraken-0.7-pre15.tar.gz
 mkdir src
 cd src
-tar xzf ../master.tar.gz
-cd thekraken-master
+tar xzf ../*.tar.gz
+cd *
 make
 make install
 rm -r /tmp/thekraken-$SUDO_USER.$$
