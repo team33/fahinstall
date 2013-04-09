@@ -117,7 +117,7 @@ echo ==== Installing thekraken...
 rm -fr /tmp/thekraken-$SUDO_USER.$$
 mkdir /tmp/thekraken-$SUDO_USER.$$
 cd /tmp/thekraken-$SUDO_USER.$$
-wget -nv https://github.com/team33/thekraken/archive/master.tar.gz
+wget -nv http://darkswarm.org/thekraken/thekraken-0.7-pre15.tar.gz
 mkdir src
 cd src
 tar xzf ../master.tar.gz
