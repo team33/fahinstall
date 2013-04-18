@@ -87,6 +87,7 @@ else
 	#create fah directory
 	echo ==== Creating fah directory...
 	sudo -u $SUDO_USER mkdir $TARGET
+	mount "$TARGET"
 
 	#get fah files
 	echo ==== Downloading F@H files...
