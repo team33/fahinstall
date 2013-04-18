@@ -59,6 +59,35 @@ rm -f fahbackup fahrestore
 wget -nv $FAHBACKUP_REPO/fahbackup $FAHBACKUP_REPO/fahrestore
 chmod +x fahbackup fahrestore
 
+#sanitize initial state -- delete fah directory if empty
+echo ==== Checking if fah/tmpfs installations are required...
+if [ -d "$TARGET" -a $(find "$TARGET" -mindepth 1 | wc -l) = "0" ]; then
+	umount "$TARGET" 2> /dev/null || true
+	rm -r "$TARGET"
+fi
+
+if [ -d "$TARGET" ]; then
+	#existing installation -- check if we need to migrate to tmpfs
+	if ! cat /proc/mounts | grep -E "^[^ ]+ $TARGET tmpfs " > /dev/null ; then
+		echo ==== Migrating to tmpfs...
+		if fuser -v "$TARGET" > /dev/null ; then
+			echo ERROR: "$TARGET" is in use
+			fuser -v "$TARGET"
+			trap - EXIT
+			exit 1
+		fi
+
+		sudo -u $SUDO_USER fahbackup
+		sync
+		rm -r "$TARGET"
+		sudo -u $SUDO_USER mkdir "$TARGET"
+		mount "$TARGET"
+		sudo -u $SUDO_USER fahrestore
+	fi
+else
+	#fresh installation
+fi
+
 #update rc.local with fahrestore
 echo ==== Updating rc.local...
 (head -1 /etc/rc.local ; echo "sudo -u $SUDO_USER fahrestore #[H]ardOCP" ; tail -n +2 /etc/rc.local | grep -v '#\[H]ardOCP') > /tmp/rclocal-$SUDO_USER.$$
