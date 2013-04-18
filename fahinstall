@@ -41,9 +41,6 @@ echo kernel.randomize_va_space=0 > /etc/sysctl.d/99-fah.conf
 echo kernel.panic=3600 >> /etc/sysctl.d/99-fah.conf
 echo kernel.print-fatal-signals=1 >> /etc/sysctl.d/99-fah.conf
 
-#create fah directory
-echo ==== Creating fah directory...
-sudo -u $SUDO_USER mkdir $TARGET
 
 #update fstab
 echo ==== Configuring fstab...
@@ -86,6 +83,30 @@ if [ -d "$TARGET" ]; then
 	fi
 else
 	#fresh installation
+
+	#create fah directory
+	echo ==== Creating fah directory...
+	sudo -u $SUDO_USER mkdir $TARGET
+
+	#get fah files
+	echo ==== Downloading F@H files...
+	cd $TARGET
+	echo "====      client"
+	wget -nv "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
+	mv FAH6.34-Linux64-SMP.exe fah6
+	chmod +x fah6
+	for i in a3 a4 a5 ; do
+		echo "====     FahCore_$i"
+		wget -nv -O - http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
+		echo
+	done
+	chmod +x FahCore*
+	chown -R $SUDO_USER:$(id -g $SUDO_USER) .
+
+	#run configonly
+	echo ==== Running F@H config...
+	sudo -u $SUDO_USER ./fah6 -configonly || true
+	echo
 fi
 
 #update rc.local with fahrestore
@@ -110,22 +131,6 @@ echo "00 * * * * fahbackup > /dev/null 2>&1"  >> /tmp/cron-$SUDO_USER.$$
 crontab -u $SUDO_USER /tmp/cron-$SUDO_USER.$$
 rm /tmp/cron-$SUDO_USER.$$
 
-
-#get fah files
-echo ==== Downloading F@H files...
-cd $TARGET
-echo "====      client"
-wget -nv "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
-mv FAH6.34-Linux64-SMP.exe fah6
-chmod +x fah6
-for i in a3 a4 a5 ; do
-	echo "====     FahCore_$i"
-	wget -nv -O - http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
-	echo
-done
-chmod +x FahCore*
-chown -R $SUDO_USER:$(id -g $SUDO_USER) .
-
 #install software
 echo ==== Installing required software...
 apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
@@ -148,11 +153,6 @@ rm -r /tmp/thekraken-$SUDO_USER.$$
 echo ==== Wrapping cores...
 cd $TARGET
 sudo -u $SUDO_USER thekraken -i
-
-#run configonly
-echo ==== Running F@H config...
-sudo -u $SUDO_USER ./fah6 -configonly || true
-echo
 
 #set up user share
 echo ==== Setting up samba...
