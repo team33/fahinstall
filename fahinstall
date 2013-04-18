@@ -153,6 +153,7 @@ rm -r /tmp/thekraken-$SUDO_USER.$$
 #wrap cores
 echo ==== Wrapping cores...
 cd $TARGET
+sudo -u $SUDO_USER thekraken -u || true
 sudo -u $SUDO_USER thekraken -i
 
 #set up user share
