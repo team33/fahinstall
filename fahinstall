@@ -32,16 +32,6 @@ fi
 
 TARGET=$(eval echo ~$SUDO_USER/fah)
 
-if [ "$1" = "-f" ]; then
-	umount $TARGET || true
-	rm -r $TARGET
-fi
-
-if [ -e "$TARGET" ]; then
-	echo ERROR: $TARGET already exists. Use -f to force installation.
-	trap - EXIT
-	exit 1
-fi
 	
 #12.04 tweaks
 echo ==== Applying 12.04 tweaks...
