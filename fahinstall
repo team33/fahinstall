@@ -4,8 +4,7 @@
 # Folding@Home install script
 # 
 
-HARDOCP_BRANCH=released #branchselection
-#HARDOCP_BRANCH=master #branchselection
+[ -z "$HARDOCP_BRANCH" ] && HARDOCP_BRANCH=released
 
 FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$HARDOCP_BRANCH
 FAHDIAG_REPO=https://raw.github.com/team33/fahdiag/$HARDOCP_BRANCH
@@ -25,9 +24,9 @@ if [ "$(id -ru)" != "0" ]; then
 	exit 1
 fi
 
-echo ==== Checking for updates...
-A=$(wget -q -O - $FAHINSTALL_REPO/fahinstall | grep -v '#branchselection' | md5sum | cut -f 1 -d \ )
-B=$(cat $0 | grep -v '#branchselection' | md5sum | cut -f 1 -d \ )
+echo ==== Checking for updates \($HARDOCP_BRANCH\)...
+A=$(wget -q -O - $FAHINSTALL_REPO/fahinstall | md5sum - | cut -f 1 -d \ )
+B=$(md5sum $0 | cut -f 1 -d \ )
 if [ "$A" != "$B" ]; then
 	echo  NOTICE: newer version of fahinstall may be available
 	echo "        and will be downloaded automatically"
