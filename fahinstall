@@ -4,12 +4,12 @@
 # Folding@Home install script
 # 
 
-BRANCH=released #branchselection
-#BRANCH=master #branchselection
+HARDOCP_BRANCH=released #branchselection
+#HARDOCP_BRANCH=master #branchselection
 
-FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$BRANCH
-FAHDIAG_REPO=https://raw.github.com/team33/fahdiag/$BRANCH
-FAHINSTALL_REPO=https://raw.github.com/team33/fahinstall/$BRANCH
+FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$HARDOCP_BRANCH
+FAHDIAG_REPO=https://raw.github.com/team33/fahdiag/$HARDOCP_BRANCH
+FAHINSTALL_REPO=https://raw.github.com/team33/fahinstall/$HARDOCP_BRANCH
 
 trap "echo Premature exit." EXIT
 
@@ -172,7 +172,7 @@ echo ==== Installing thekraken...
 rm -fr /tmp/thekraken-$SUDO_USER.$$
 mkdir /tmp/thekraken-$SUDO_USER.$$
 cd /tmp/thekraken-$SUDO_USER.$$
-wget -nv https://github.com/team33/thekraken/archive/$BRANCH.tar.gz
+wget -nv https://github.com/team33/thekraken/archive/$HARDOCP_BRANCH.tar.gz
 mkdir src
 cd src
 tar xzf ../*.tar.gz
