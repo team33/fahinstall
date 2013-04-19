@@ -4,18 +4,49 @@
 # Folding@Home install script
 # 
 
-BRANCH=released
-#BRANCH=master
+BRANCH=released #branchselection
+#BRANCH=master #branchselection
 
 FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$BRANCH
 FAHDIAG_REPO=https://raw.github.com/team33/fahdiag/$BRANCH
+FAHINSTALL_REPO=https://raw.github.com/team33/fahinstall/$BRANCH
 
 trap "echo Premature exit." EXIT
+
+if [ "$(basename $0)" != "fahinstall" ]; then
+	echo ERROR: this code needs to be called as \'fahinstall\'
+	trap - EXIT
+	exit 1
+fi
 
 if [ "$(id -ru)" != "0" ]; then
 	echo ERROR: need root privileges. Run with sudo.
 	trap - EXIT
 	exit 1
+fi
+
+echo ==== Checking for updates...
+A=$(wget -q -O - $FAHINSTALL_REPO/fahinstall | grep -v '#branchselection' | md5sum | cut -f 1 -d \ )
+B=$(cat $0 | grep -v '#branchselection' | md5sum | cut -f 1 -d \ )
+if [ "$A" != "$B" ]; then
+	echo  NOTICE: newer version of fahinstall may be available
+	echo "        and will be downloaded automatically"
+	echo
+	if [ -t 0 ]; then
+		echo  Press Ctrl+C to exit or Enter to proceed.
+		if ! read I ; then
+			trap - EXIT
+			exit 1
+		fi
+	fi
+	wget -q -O /tmp/$0-$SUDO_USER.$$ $FAHINSTALL_REPO/fahinstall
+	mv $0 $0-prev
+	cp -a $0-prev $0
+	cat /tmp/$0-$SUDO_USER.$$ > $0
+	rm /tmp/$0-$SUDO_USER.$$
+	sync
+	. $0
+	exit 0
 fi
 
 if [ -z "$SUDO_USER" ]; then
