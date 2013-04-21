@@ -4,6 +4,49 @@
 # Folding@Home install script
 # 
 
+usage()
+{
+	echo Usage:
+	echo -e \\t$0 -V
+	echo -e \\t$0 -h
+}
+
+OPT_VERSION=
+OPT_USAGE=
+
+while [ -n "$1" ]; do
+	case $1 in
+		(-V)
+			OPT_VERSION=1
+			shift
+			;;
+		(-h)
+			OPT_USAGE=1
+			shift
+			;;
+		(-*)
+			echo ERROR: invalid option -- $1
+			exit 1
+			;;
+		(*)
+			break
+			;;
+	esac
+done
+
+if [ -n "$1" ]; then
+	echo ERROR: excess argument -- $1
+	exit 1
+fi
+
+if [ -n "$OPT_VERSION$OPT_USAGE" -a "$OPT_VERSION$OPT_USAGE" != "1" ]; then
+	echo ERROR: conflicting arguments
+	exit 1
+fi
+
+[ -n "$OPT_USAGE" ] && usage && exit 0
+[ -n "$OPT_VERSION" ] && echo fahinstall 1.1 && exit 0
+
 [ -z "$HARDOCP_BRANCH" ] && HARDOCP_BRANCH=released
 
 FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$HARDOCP_BRANCH
