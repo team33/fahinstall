@@ -10,17 +10,15 @@ FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$HARDOCP_BRANCH
 FAHDIAG_REPO=https://raw.github.com/team33/fahdiag/$HARDOCP_BRANCH
 FAHINSTALL_REPO=https://raw.github.com/team33/fahinstall/$HARDOCP_BRANCH
 
-trap "echo Premature exit." EXIT
+trap "echo Premature exit." ERR
 
 if [ "$(basename $0)" != "fahinstall" ]; then
 	echo ERROR: this code needs to be called as \'fahinstall\'
-	trap - EXIT
 	exit 1
 fi
 
 if [ "$(id -ru)" != "0" ]; then
 	echo ERROR: need root privileges. Run with sudo.
-	trap - EXIT
 	exit 1
 fi
 
@@ -34,7 +32,6 @@ if [ "$A" != "$B" ]; then
 	if [ -t 0 ]; then
 		echo  Press Ctrl+C to exit or Enter to proceed.
 		if ! read I ; then
-			trap - EXIT
 			exit 1
 		fi
 	fi
@@ -50,13 +47,11 @@ fi
 
 if [ -z "$SUDO_USER" ]; then
 	echo ERROR: SUDO_USER variable not set, cannot continue.
-	trap - EXIT
 	exit 1
 fi
 
 if [ "$SUDO_USER" = "fah" ]; then
 	echo ERROR: user \'fah\' not supported. Create another user and try again.
-	trap - EXIT
 	exit 1
 fi
 
@@ -100,7 +95,6 @@ if [ -d "$TARGET" ]; then
 		if fuser -v "$TARGET" > /dev/null ; then
 			echo ERROR: "$TARGET" is in use
 			fuser -v "$TARGET"
-			trap - EXIT
 			exit 1
 		fi
 
@@ -208,5 +202,3 @@ echo Your IP Address: $(ip route get 8.8.8.8 | sed -ne '{s/^.*src.//;p;q}')
 echo Your machine name: $HOSTNAME
 echo
 echo Done. Please reboot your system now.
-
-trap - EXIT
