@@ -180,7 +180,7 @@ fi
 #update rc.local with fahrestore
 echo ==== Updating rc.local...
 (head -1 /etc/rc.local ; echo "sudo -u $SUDO_USER fahrestore #[H]ardOCP" ; tail -n +2 /etc/rc.local | grep -v '#\[H]ardOCP') > /tmp/rclocal-$SUDO_USER.$$
-mv /tmp/rclocal-$SUDO_USER.$$ /etc/rc.local
+cat /tmp/rclocal-$SUDO_USER.$$ > /etc/rc.local
 chmod +x /etc/rc.local
 
 #create backup script in /etc/init.d and symlinks
