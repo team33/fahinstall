@@ -179,7 +179,9 @@ fi
 
 #update rc.local with fahrestore
 echo ==== Updating rc.local...
-(head -1 /etc/rc.local ; echo "sudo -u $SUDO_USER fahrestore #[H]ardOCP" ; tail -n +2 /etc/rc.local | grep -v '#\[H]ardOCP') > /tmp/rclocal-$SUDO_USER.$$
+(head -1 /etc/rc.local
+ echo "sudo -u $SUDO_USER fahrestore #[H]ardOCP"
+ tail -n +2 /etc/rc.local | grep -v '#\[H]ardOCP') > /tmp/rclocal-$SUDO_USER.$$
 cat /tmp/rclocal-$SUDO_USER.$$ > /etc/rc.local
 chmod +x /etc/rc.local
 
