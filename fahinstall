@@ -228,9 +228,9 @@ echo ==== Setting up samba...
 sudo -u $SUDO_USER net usershare add fah $TARGET "" "Everyone:f" "guest_ok=y"
 
 #update smb.conf - security = share (no p/w required to connect)
-cp -a /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
+cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
 testparm -s | grep -v '^\tsecurity =' | sed -e 's/\[global]/&\n\tsecurity = share/' > /tmp/smbconf-$SUDO_USER.$$
-mv /tmp/smbconf-$SUDO_USER.$$ /etc/samba/smb.conf
+cat /tmp/smbconf-$SUDO_USER.$$ > /etc/samba/smb.conf
 
 #get fahdiag
 echo ==== Installing fahdiag...
