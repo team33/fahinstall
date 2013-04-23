@@ -78,11 +78,11 @@ if [ "$A" != "$B" ]; then
 			exit 1
 		fi
 	fi
-	wget -q -O /tmp/$0-$SUDO_USER.$$ $FAHINSTALL_REPO/fahinstall
+	wget -q -O /tmp/$(basename $0)-$SUDO_USER.$$ $FAHINSTALL_REPO/fahinstall
 	mv $0 $0-prev
 	cp -a $0-prev $0
-	cat /tmp/$0-$SUDO_USER.$$ > $0
-	rm /tmp/$0-$SUDO_USER.$$
+	cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
+	rm /tmp/$(basename $0)-$SUDO_USER.$$
 	sync
 	. $0
 	exit 0
