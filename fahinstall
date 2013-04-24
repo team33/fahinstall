@@ -12,6 +12,24 @@ usage()
 	echo -e \\t$0 -h
 }
 
+#
+# download a file
+# syntax: download <URL> [<output-file-name>]
+#
+download()
+{
+	local CURL_PARAM
+
+	[ -z "$1" ] && return 1
+	if which wget > /dev/null 2>&1 ; then
+		wget -nv ${2:+-O $2} "$1" || return $?
+	else
+		[ -z "$2" ] && CURL_PARAM="-O" || CURL_PARAM="-o $2"
+		curl -f -s -S -R -L $CURL_PARAM "$1" || return $?
+	fi
+	return 0
+}
+
 OPT_VERSION=
 OPT_USAGE=
 OPT_NOUPDATE=
@@ -95,7 +113,7 @@ if [ -n "$OPT_NOUPDATE" ]; then
 	echo ==== Not checking for updates
 else
 	echo ==== Checking for updates \($HARDOCP_BRANCH\)...
-	A=$(wget -q -O - $FAHINSTALL_REPO/fahinstall | md5sum - | cut -f 1 -d \ )
+	A=$(download $FAHINSTALL_REPO/fahinstall - | md5sum - | cut -f 1 -d \ )
 	B=$(md5sum $0 | cut -f 1 -d \ )
 	if [ "$A" != "$B" ]; then
 		echo  NOTICE: newer version of fahinstall may be available
@@ -107,7 +125,7 @@ else
 				exit 1
 			fi
 		fi
-		wget -q -O /tmp/$(basename $0)-$SUDO_USER.$$ $FAHINSTALL_REPO/fahinstall
+		download $FAHINSTALL_REPO/fahinstall /tmp/$(basename $0)-$SUDO_USER.$$
 		mv $0 $0-prev
 		cp -a $0-prev $0
 		cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
@@ -151,7 +169,8 @@ sync
 echo ==== Setting up backup and restore scripts...
 cd /usr/bin
 rm -f fahbackup fahrestore
-wget -nv $FAHBACKUP_REPO/fahbackup $FAHBACKUP_REPO/fahrestore
+download $FAHBACKUP_REPO/fahbackup
+download $FAHBACKUP_REPO/fahrestore
 chmod +x fahbackup fahrestore
 
 #sanitize initial state -- delete fah directory if empty
@@ -190,12 +209,12 @@ else
 	echo ==== Downloading F@H files...
 	cd "$TARGET"
 	echo "====      client"
-	wget -nv "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
+	download "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
 	mv FAH6.34-Linux64-SMP.exe fah6
 	chmod +x fah6
 	for i in a3 a4 a5 ; do
 		echo "====     FahCore_$i"
-		wget -nv -O - http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
+		download http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah - | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
 		echo
 	done
 	chmod +x FahCore*
@@ -241,7 +260,7 @@ echo ==== Installing thekraken...
 rm -fr /tmp/thekraken-$SUDO_USER.$$
 mkdir /tmp/thekraken-$SUDO_USER.$$
 cd /tmp/thekraken-$SUDO_USER.$$
-wget -nv -O thekraken-$HARDOCP_BRANCH.tar.gz https://github.com/team33/thekraken/archive/$HARDOCP_BRANCH.tar.gz
+download https://github.com/team33/thekraken/archive/$HARDOCP_BRANCH.tar.gz thekraken-$HARDOCP_BRANCH.tar.gz
 mkdir src
 cd src
 tar xzf ../*.tar.gz
@@ -269,7 +288,7 @@ cat /tmp/smbconf-$SUDO_USER.$$ > /etc/samba/smb.conf
 echo ==== Installing fahdiag...
 cd /usr/bin
 rm -f fahdiag
-wget -nv $FAHDIAG_REPO/fahdiag
+download $FAHDIAG_REPO/fahdiag
 chmod +x fahdiag
 
 # Finishing up...
