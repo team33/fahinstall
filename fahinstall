@@ -7,12 +7,14 @@
 usage()
 {
 	echo Usage:
+	echo -e \\t$0 [-U]
 	echo -e \\t$0 -V
 	echo -e \\t$0 -h
 }
 
 OPT_VERSION=
 OPT_USAGE=
+OPT_NOUPDATE=
 
 while [ -n "$1" ]; do
 	case $1 in
@@ -22,6 +24,10 @@ while [ -n "$1" ]; do
 			;;
 		(-h)
 			OPT_USAGE=1
+			shift
+			;;
+		(-U)
+			OPT_NOUPDATE=1
 			shift
 			;;
 		(-*)
@@ -39,7 +45,12 @@ if [ -n "$1" ]; then
 	exit 1
 fi
 
-if [ -n "$OPT_VERSION$OPT_USAGE" -a "$OPT_VERSION$OPT_USAGE" != "1" ]; then
+#
+# Set OPT_NORMAL if any regular (non -h -V) params are set
+#
+[ -n "$OPT_NOUPDATE" ] && OPT_NORMAL=1
+
+if [ -n "$OPT_VERSION$OPT_USAGE$OPT_NORMAL" -a "$OPT_VERSION$OPT_USAGE$OPT_NORMAL" != "1" ]; then
 	echo ERROR: conflicting arguments
 	exit 1
 fi
@@ -65,27 +76,31 @@ if [ "$(id -ru)" != "0" ]; then
 	exit 1
 fi
 
-echo ==== Checking for updates \($HARDOCP_BRANCH\)...
-A=$(wget -q -O - $FAHINSTALL_REPO/fahinstall | md5sum - | cut -f 1 -d \ )
-B=$(md5sum $0 | cut -f 1 -d \ )
-if [ "$A" != "$B" ]; then
-	echo  NOTICE: newer version of fahinstall may be available
-	echo "        and will be downloaded automatically"
-	echo
-	if [ -t 0 ]; then
-		echo  Press Ctrl+C to exit or Enter to proceed.
-		if ! read I ; then
-			exit 1
+if [ -n "$OPT_NOUPDATE" ]; then 
+	echo ==== Not checking for updates
+else
+	echo ==== Checking for updates \($HARDOCP_BRANCH\)...
+	A=$(wget -q -O - $FAHINSTALL_REPO/fahinstall | md5sum - | cut -f 1 -d \ )
+	B=$(md5sum $0 | cut -f 1 -d \ )
+	if [ "$A" != "$B" ]; then
+		echo  NOTICE: newer version of fahinstall may be available
+		echo "        and will be downloaded automatically"
+		echo
+		if [ -t 0 ]; then
+			echo  Press Ctrl+C to exit or Enter to proceed.
+			if ! read I ; then
+				exit 1
+			fi
 		fi
+		wget -q -O /tmp/$(basename $0)-$SUDO_USER.$$ $FAHINSTALL_REPO/fahinstall
+		mv $0 $0-prev
+		cp -a $0-prev $0
+		cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
+		rm /tmp/$(basename $0)-$SUDO_USER.$$
+		sync
+		. $0
+		exit 0
 	fi
-	wget -q -O /tmp/$(basename $0)-$SUDO_USER.$$ $FAHINSTALL_REPO/fahinstall
-	mv $0 $0-prev
-	cp -a $0-prev $0
-	cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
-	rm /tmp/$(basename $0)-$SUDO_USER.$$
-	sync
-	. $0
-	exit 0
 fi
 
 if [ -z "$SUDO_USER" ]; then
