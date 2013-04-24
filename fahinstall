@@ -223,7 +223,7 @@ else
 	#get fah files
 	echo ==== Downloading F@H files...
 	cd "$TARGET"
-	echo "====      client"
+	echo "====     client"
 	download "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
 	mv FAH6.34-Linux64-SMP.exe fah6
 	chmod +x fah6
