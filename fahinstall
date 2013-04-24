@@ -141,19 +141,19 @@ if [ -d "$TARGET" ]; then
 			exit 1
 		fi
 
-		sudo -u $SUDO_USER fahbackup
+		su $SUDO_USER -c fahbackup
 		sync
 		rm -r "$TARGET"
-		sudo -u $SUDO_USER mkdir "$TARGET"
+		su $SUDO_USER -c "mkdir \"$TARGET\""
 		mount "$TARGET"
-		sudo -u $SUDO_USER fahrestore
+		su $SUDO_USER -c fahrestore
 	fi
 else
 	#fresh installation
 
 	#create fah directory
 	echo ==== Creating fah directory...
-	sudo -u $SUDO_USER mkdir "$TARGET"
+	su $SUDO_USER -c "mkdir \"$TARGET\""
 	mount "$TARGET"
 
 	#get fah files
@@ -173,14 +173,14 @@ else
 
 	#run configonly
 	echo ==== Running F@H config...
-	sudo -u $SUDO_USER ./fah6 -configonly || true
+	su $SUDO_USER -c "./fah6 -configonly" || true
 	echo
 fi
 
 #update rc.local with fahrestore
 echo ==== Updating rc.local...
 (head -1 /etc/rc.local
- echo "openvt -w -- sudo -u $SUDO_USER fahrestore #[H]ardOCP"
+ echo "su $SUDO_USER -c fahrestore #[H]ardOCP"
  echo "sysctl -w vm.drop_caches=1 #[H]ardOCP"
  tail -n +2 /etc/rc.local | grep -v '#\[H]ardOCP') > /tmp/rclocal-$SUDO_USER.$$
 cat /tmp/rclocal-$SUDO_USER.$$ > /etc/rc.local
@@ -189,7 +189,7 @@ chmod +x /etc/rc.local
 #create backup script in /etc/init.d and symlinks
 echo ==== Setting up shutdown scripts...
 echo "#!/bin/bash" > /etc/init.d/fahbackup-rc
-echo "sudo -u $SUDO_USER fahbackup" >> /etc/init.d/fahbackup-rc
+echo "su $SUDO_USER -c fahbackup" >> /etc/init.d/fahbackup-rc
 chmod +x /etc/init.d/fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc0.d/K10fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc1.d/K10fahbackup-rc
@@ -223,12 +223,12 @@ rm -r /tmp/thekraken-$SUDO_USER.$$
 #wrap cores
 echo ==== Wrapping cores...
 cd "$TARGET"
-sudo -u $SUDO_USER thekraken -u || true
-sudo -u $SUDO_USER thekraken -i
+su $SUDO_USER -c "thekraken -u" || true
+su $SUDO_USER -c "thekraken -i"
 
 #set up user share
 echo ==== Setting up samba...
-sudo -u $SUDO_USER net usershare add fah "$TARGET" "" "Everyone:f" "guest_ok=y"
+su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_ok=y\""
 
 #update smb.conf - security = share (no p/w required to connect)
 cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
