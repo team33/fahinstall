@@ -167,7 +167,11 @@ TARGET=$(eval echo ~$SUDO_USER/fah)
 #12.04 tweaks
 echo ==== Applying 12.04 tweaks...
 update-rc.d ondemand disable
-sed -i -e 's/^ENABLED.*$/ENABLED="0"/' /etc/default/irqbalance
+
+#
+# Disable irqbalance whenever upstart configuration file is present
+#
+[ -f /etc/default/irqbalance ] && sed -i -e 's/^ENABLED.*$/ENABLED="0"/' /etc/default/irqbalance && sync
 
 #
 # Update sysctl configuration
