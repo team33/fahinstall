@@ -177,7 +177,7 @@ echo kernel.print-fatal-signals=1 >> /etc/sysctl.d/99-fah.conf
 echo ==== Configuring fstab...
 grep -v "$TARGET" /etc/fstab > /tmp/fstab-$SUDO_USER.$$
 echo "tmpfs  $TARGET  tmpfs  rw,uid=$(id -u $SUDO_USER),gid=$(id -g $SUDO_USER)  0  0" >> /tmp/fstab-$SUDO_USER.$$
-mv /tmp/fstab-$SUDO_USER.$$ /etc/fstab
+mv /tmp/fstab-$SUDO_USER.$$ $(readlink -e /etc/fstab)
 sync
 
 #get restore and backup scripts
@@ -248,7 +248,7 @@ echo ==== Updating rc.local...
  echo "sysctl -w vm.drop_caches=1 #[H]ardOCP"
  echo "touch /var/lock/subsys/fahbackup-rc || true #[H]ardOCP"
  tail -n +2 /etc/rc.local | grep -v '#\[H]ardOCP') > /tmp/rclocal-$SUDO_USER.$$
-cat /tmp/rclocal-$SUDO_USER.$$ > /etc/rc.local
+mv /tmp/rclocal-$SUDO_USER.$$ $(readlink -e /etc/rc.local)
 chmod +x /etc/rc.local
 touch /var/lock/subsys/fahbackup-rc 2> /dev/null || true
 
@@ -299,7 +299,7 @@ su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_
 #update smb.conf - security = share (no p/w required to connect)
 cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
 testparm -s | grep -v '^\tsecurity =' | sed -e 's/\[global]/&\n\tsecurity = share/' > /tmp/smbconf-$SUDO_USER.$$
-cat /tmp/smbconf-$SUDO_USER.$$ > /etc/samba/smb.conf
+mv /tmp/smbconf-$SUDO_USER.$$ $(readlink -e /etc/samba/smb.conf)
 
 #get fahdiag
 echo ==== Installing fahdiag...
