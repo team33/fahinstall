@@ -141,8 +141,8 @@ if [ -z "$SUDO_USER" ]; then
 	exit 1
 fi
 
-if [ "$SUDO_USER" = "fah" ]; then
-	echo ERROR: user \'fah\' not supported. Create another user and try again.
+if [ "$SUDO_USER" = "fah" -o "$SUDO_USER" = "root" ]; then
+	echo ERROR: user \'$SUDO_USER\' not supported. Create another user and try again.
 	exit 1
 fi
 
