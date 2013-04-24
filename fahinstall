@@ -146,7 +146,7 @@ else
 		cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
 		rm /tmp/$(basename $0)-$SUDO_USER.$$
 		sync
-		. $0
+		. $0 -b $HARDOCP_BRANCH
 		exit 0
 	fi
 fi
