@@ -197,7 +197,7 @@ ln -fs /etc/init.d/fahbackup-rc /etc/rc6.d/K10fahbackup-rc
 
 #set up cron job
 echo ==== Setting up cron job...
-(sudo -u $SUDO_USER crontab -l 2> /dev/null | grep -v fahbackup || true) > /tmp/cron-$SUDO_USER.$$
+(crontab -u $SUDO_USER -l 2> /dev/null | grep -v fahbackup || true) > /tmp/cron-$SUDO_USER.$$
 echo "00 * * * * fahbackup > /dev/null 2>&1"  >> /tmp/cron-$SUDO_USER.$$
 crontab -u $SUDO_USER /tmp/cron-$SUDO_USER.$$
 rm /tmp/cron-$SUDO_USER.$$
