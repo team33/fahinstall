@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U]
+	echo -e \\t$0 [-U] [-b <branch>]
 	echo -e \\t$0 -V
 	echo -e \\t$0 -h
 }
@@ -15,6 +15,7 @@ usage()
 OPT_VERSION=
 OPT_USAGE=
 OPT_NOUPDATE=
+OPT_BRANCH=
 
 while [ -n "$1" ]; do
 	case $1 in
@@ -28,6 +29,15 @@ while [ -n "$1" ]; do
 			;;
 		(-U)
 			OPT_NOUPDATE=1
+			shift
+			;;
+		(-b)
+			shift
+			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
+				echo ERROR: option -b requires an argument
+				exit 1
+			fi
+			OPT_BRANCH=$1
 			shift
 			;;
 		(-*)
@@ -49,6 +59,7 @@ fi
 # Set OPT_NORMAL if any regular (non -h -V) params are set
 #
 [ -n "$OPT_NOUPDATE" ] && OPT_NORMAL=1
+[ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
 
 #
 # Check for command-line option conflicts
@@ -60,6 +71,7 @@ fi
 
 [ -n "$OPT_USAGE" ] && usage && exit 0
 [ -n "$OPT_VERSION" ] && echo fahinstall 1.1 && exit 0
+HARDOCP_BRANCH=$OPT_BRANCH
 
 [ -z "$HARDOCP_BRANCH" ] && HARDOCP_BRANCH=released
 
