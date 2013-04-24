@@ -176,7 +176,7 @@ update-rc.d ondemand disable
 #
 # Update sysctl configuration
 #
-grep -v '#[H]ardOCP' /etc/sysctl.conf > /tmp/sysctl.conf-$SUDO_USER.$$ || true
+grep -v '#\[H]ardOCP' /etc/sysctl.conf > /tmp/sysctl.conf-$SUDO_USER.$$ || true
 mv /tmp/sysctl.conf-$SUDO_USER.$$ $(readlink -e /etc/sysctl.conf)
 sync
 if [ -d /etc/sysctl.d ]; then
