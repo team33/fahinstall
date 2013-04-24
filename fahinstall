@@ -50,6 +50,9 @@ fi
 #
 [ -n "$OPT_NOUPDATE" ] && OPT_NORMAL=1
 
+#
+# Check for command-line option conflicts
+#
 if [ -n "$OPT_VERSION$OPT_USAGE$OPT_NORMAL" -a "$OPT_VERSION$OPT_USAGE$OPT_NORMAL" != "1" ]; then
 	echo ERROR: conflicting arguments
 	exit 1
