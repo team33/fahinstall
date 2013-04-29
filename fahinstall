@@ -186,7 +186,7 @@ which systemctl > /dev/null 2>&1 && systemctl disable irqbalance 2> /dev/null ||
 #
 # Update sysctl configuration
 #
-awk '/#[H]ardOCP/ { next } /^# \[H]ardOCP begins/ { P = 1 } { if (P != 1) print } /^# \[H]ardOCP ends/ { P = 0 }' /etc/sysctl.conf > /tmp/sysctl.conf-$SUDO_USER.$$ || true
+awk '/#\[H]ardOCP/ { next } /^# \[H]ardOCP begins/ { P = 1 } { if (P != 1) print } /^# \[H]ardOCP ends/ { P = 0 }' /etc/sysctl.conf > /tmp/sysctl.conf-$SUDO_USER.$$ || true
 mv /tmp/sysctl.conf-$SUDO_USER.$$ $(readlink -e /etc/sysctl.conf)
 sync
 if [ -d /etc/sysctl.d ]; then
