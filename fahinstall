@@ -163,7 +163,11 @@ fi
 
 TARGET=$(eval echo ~$SUDO_USER/fah)
 
-	
+
+#install software
+echo ==== Installing required software...
+apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
+
 #12.04 tweaks
 echo ==== Applying 12.04 tweaks...
 update-rc.d ondemand disable
@@ -284,10 +288,6 @@ echo ==== Setting up cron job...
 echo "00 * * * * fahbackup > /dev/null 2>&1"  >> /tmp/cron-$SUDO_USER.$$
 crontab -u $SUDO_USER /tmp/cron-$SUDO_USER.$$
 rm /tmp/cron-$SUDO_USER.$$
-
-#install software
-echo ==== Installing required software...
-apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
 
 #install thekraken
 echo ==== Installing thekraken...
