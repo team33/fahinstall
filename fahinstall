@@ -186,8 +186,8 @@ which systemctl > /dev/null 2>&1 && systemctl disable irqbalance 2> /dev/null ||
 #
 # Update sysctl configuration
 #
-grep -v '#\[H]ardOCP' /etc/sysctl.conf > /tmp/sysctl.conf-$SUDO_USER.$$ || true
-mv /tmp/sysctl.conf-$SUDO_USER.$$ $(readlink -e /etc/sysctl.conf)
+awk '/#[H]ardOCP/ { next } /^# \[H]ardOCP begins/ { P = 1 } { if (P != 1) print } /^# \[H]ardOCP ends/ { P = 0 }' $SYSCTL_CONF > /tmp/sysctl.conf-$SUDO_USER.$$ || true
+mv /tmp/sysctl.conf-$SUDO_USER.$$ $(readlink -e $SYSCTL_CONF)
 sync
 if [ -d /etc/sysctl.d ]; then
 	SYSCTL_CONF=/etc/sysctl.d/99-fah.conf
@@ -195,9 +195,11 @@ if [ -d /etc/sysctl.d ]; then
 else
 	SYSCTL_CONF=/etc/sysctl.conf
 fi
-echo "kernel.randomize_va_space=0 #[H]ardOCP" >> $SYSCTL_CONF
-echo "kernel.panic=3600 #[H]ardOCP" >> $SYSCTL_CONF
-echo "kernel.print-fatal-signals=1 #[H]ardOCP" >> $SYSCTL_CONF
+echo "# [H]ardOCP begins" >> $SYSCTL_CONF
+echo "kernel.randomize_va_space=0" >> $SYSCTL_CONF
+echo "kernel.panic=3600" >> $SYSCTL_CONF
+echo "kernel.print-fatal-signals=1" >> $SYSCTL_CONF
+echo "# [H]ardOCP ends" >> $SYSCTL_CONF
 sync
 
 #update fstab
