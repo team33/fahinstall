@@ -335,9 +335,14 @@ su $SUDO_USER -c "thekraken -i"
 
 
 echo ==== Configuring samba...
-#update smb.conf - security = share (no p/w required to connect)
+#
+# update smb.conf
+#     security = share (no p/w required to connect)
+#     usershare max shares = 100 (enable usershares)
+#     usershare allow guests = yes
+#
 cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
-testparm -s | grep -v '^	security =' | sed -e 's/\[global]/&\n\tsecurity = share/' > /tmp/smbconf-$SUDO_USER.$$
+testparm -s | grep -Ev '^	security =|^	usershare max shares =|^	usershare allow guests =' | sed -e 's/\[global]/&\n\tsecurity = share\n\tusershare max shares = 100\n\tusershare allow guests = yes/' > /tmp/smbconf-$SUDO_USER.$$
 mv /tmp/smbconf-$SUDO_USER.$$ $(readlink -e /etc/samba/smb.conf)
 sync
 
