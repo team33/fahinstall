@@ -277,6 +277,7 @@ if grep '#\[H]ardOCP' /etc/rc.local 2> /dev/null ; then
 	echo ==== Cleaning-up rc.local ...
 	grep -v '#\[H]ardOCP' /etc/rc.local > /tmp/rclocal-$SUDO_USER.$$
 	mv /tmp/rclocal-$SUDO_USER.$$ $(readlink -e /etc/rc.local)
+	chmod +x /etc/rc.local
 fi
 
 #create backup script in /etc/init.d and symlinks
