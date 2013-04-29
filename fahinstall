@@ -296,6 +296,7 @@ if [ "\$1" != "stop" ]; then
 	exit 1
 fi
 su $SUDO_USER -c fahbackup
+rm -f /var/lock/subsys/fahbackup-rc
 exit 0
 EOF
 chmod +x /etc/init.d/fahbackup-rc
