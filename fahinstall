@@ -171,6 +171,10 @@ which yum > /dev/null 2>&1 && yum -y -q install tar bzip2 screen samba mcelog gc
 
 #12.04 tweaks
 echo ==== Applying 12.04 tweaks...
+
+#
+# Disable ondemand scaling governor
+#
 which update-rc.d > /dev/null 2>&1 && update-rc.d ondemand disable
 
 #
