@@ -303,6 +303,11 @@ ln -fs /etc/init.d/fahbackup-rc /etc/rc0.d/K10fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc1.d/K10fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc6.d/K10fahbackup-rc
 
+ln -fs /etc/init.d/fahbackup-rc /etc/rc2.d/S90fahbackup-rc
+ln -fs /etc/init.d/fahbackup-rc /etc/rc3.d/S90fahbackup-rc
+ln -fs /etc/init.d/fahbackup-rc /etc/rc4.d/S90fahbackup-rc
+ln -fs /etc/init.d/fahbackup-rc /etc/rc5.d/S90fahbackup-rc
+
 #set up cron job
 echo ==== Setting up cron job...
 (crontab -u $SUDO_USER -l 2> /dev/null | grep -v fahbackup || true) > /tmp/cron-$SUDO_USER.$$
