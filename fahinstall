@@ -343,6 +343,7 @@ echo ==== Configuring samba...
 #
 cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
 testparm -s | grep -Ev '^	security =|^	usershare max shares =|^	usershare allow guests =' | sed -e 's/\[global]/&\n\tsecurity = share\n\tusershare max shares = 100\n\tusershare allow guests = yes/' > /tmp/smbconf-$SUDO_USER.$$
+grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext /etc/samba/smb.conf | cut -f 1 -d \ ) /tmp/smbconf-$SUDO_USER.$$
 mv /tmp/smbconf-$SUDO_USER.$$ $(readlink -e /etc/samba/smb.conf)
 sync
 
