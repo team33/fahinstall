@@ -398,4 +398,4 @@ echo
 echo Your IP Address: $(ip route get 8.8.8.8 | sed -ne '{s/^.*src.//;p;q}')
 echo Your machine name: $HOSTNAME
 echo
-echo Done. Please reboot your system now.
+echo Done. Reboot your system to complete configuration.
