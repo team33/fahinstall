@@ -372,8 +372,10 @@ service smb stop 2> /dev/null > /dev/null || true
 service smb start 2> /dev/null || true
 sleep 1
 
+echo ==== Setting up fah share...
 su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_ok=y\""
 chmod o+x $(eval echo ~$SUDO_USER)
+
 
 #get fahdiag
 echo ==== Installing fahdiag...
