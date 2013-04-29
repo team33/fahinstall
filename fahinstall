@@ -360,6 +360,18 @@ if [ ! -d /var/lib/samba/usershares ]; then
 	grep selinux /proc/mounts > /dev/null && setsebool -P samba_enable_home_dirs 1
 fi
 
+#
+# restart samba, try both Ubuntu and Fedora ways;
+# additionally drop Fedora's 'stop' stdout so user
+# doesn't get confused by potential '[FAILED]'
+#
+echo ==== Restarting samba...
+service smbd stop 2> /dev/null || true
+service smbd start 2> /dev/null || true
+service smb stop 2> /dev/null > /dev/null || true
+service smb start 2> /dev/null || true
+sleep 1
+
 su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_ok=y\""
 
 #get fahdiag
