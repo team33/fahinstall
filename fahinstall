@@ -174,9 +174,11 @@ echo ==== Applying 12.04 tweaks...
 update-rc.d ondemand disable
 
 #
-# Disable irqbalance whenever upstart configuration file is present
+# Disable irqbalance: try upstart, LSB and systemd methods
 #
 [ -f /etc/default/irqbalance ] && sed -i -e 's/^ENABLED.*$/ENABLED="0"/' /etc/default/irqbalance && sync
+which chkconfig > /dev/null 2>&1 && chkconfig irqbalance off 2> /dev/null || true
+which systemctl > /dev/null 2>&1 && systemctl disable irqbalance 2> /dev/null || true
 
 #
 # Update sysctl configuration
