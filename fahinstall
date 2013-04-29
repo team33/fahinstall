@@ -166,7 +166,7 @@ TARGET=$(eval echo ~$SUDO_USER/fah)
 
 #install software
 echo ==== Installing required software...
-apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
+which apt-get > /dev/null 2>&1 && apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
 
 #12.04 tweaks
 echo ==== Applying 12.04 tweaks...
