@@ -165,7 +165,7 @@ TARGET=$(eval echo ~$SUDO_USER/fah)
 
 
 #install software
-echo ==== Installing required software...
+echo ==== Installing required software, this may take a few minutes ...
 which apt-get > /dev/null 2>&1 && apt-get install -qq openssh-server screen samba mcelog pastebinit build-essential
 which yum > /dev/null 2>&1 && yum -y -q install tar bzip2 screen samba mcelog gcc make
 
