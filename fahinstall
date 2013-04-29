@@ -341,6 +341,7 @@ su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_
 cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
 testparm -s | grep -v '^	security =' | sed -e 's/\[global]/&\n\tsecurity = share/' > /tmp/smbconf-$SUDO_USER.$$
 mv /tmp/smbconf-$SUDO_USER.$$ $(readlink -e /etc/samba/smb.conf)
+sync
 
 #get fahdiag
 echo ==== Installing fahdiag...
