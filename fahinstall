@@ -283,8 +283,21 @@ touch /var/lock/subsys/fahbackup-rc 2> /dev/null || true
 
 #create backup script in /etc/init.d and symlinks
 echo ==== Setting up shutdown scripts...
-echo "#!/bin/bash" > /etc/init.d/fahbackup-rc
-echo "su $SUDO_USER -c fahbackup" >> /etc/init.d/fahbackup-rc
+cat > /etc/init.d/fahbackup-rc << EOF
+#!/bin/sh -e
+if [ "\$1" = "start" ]; then
+	su $SUDO_USER -c fahrestore
+	touch /var/lock/subsys/fahbackup-rc || true
+	sysctl -w vm.drop_caches=1 || true
+	exit 0
+fi
+if [ "\$1" != "stop" ]; then
+	echo Unknown command -- \$1 >&2
+	exit 1
+fi
+su $SUDO_USER -c fahbackup
+exit 0
+EOF
 chmod +x /etc/init.d/fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc0.d/K10fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc1.d/K10fahbackup-rc
