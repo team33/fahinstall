@@ -347,6 +347,19 @@ grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext /etc/samba/smb.co
 mv /tmp/smbconf-$SUDO_USER.$$ $(readlink -e /etc/samba/smb.conf)
 sync
 
+#
+# create usershares directory if it doesn't exist
+#
+if [ ! -d /var/lib/samba/usershares ]; then
+	echo ==== Setting up samba usershares, this may take a few minutes ...
+	groupadd -f sambashare
+	usermod -a -G sambashare $SUDO_USER
+	mkdir -m 1770 /var/lib/samba/usershares
+	chown root:sambashare /var/lib/samba/usershares
+	grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext -d /var/lib/samba | cut -f 1 -d \ ) /var/lib/samba/usershares
+	grep selinux /proc/mounts > /dev/null && setsebool -P samba_enable_home_dirs 1
+fi
+
 su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_ok=y\""
 
 #get fahdiag
