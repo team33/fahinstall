@@ -226,7 +226,7 @@ fi
 
 if [ -d "$TARGET" ]; then
 	#existing installation -- check if we need to migrate to tmpfs
-	if ! cat /proc/mounts | grep -E "^[^ ]+ $TARGET tmpfs " > /dev/null ; then
+	if ! grep -E "^[^ ]+ $TARGET tmpfs " /proc/mounts > /dev/null ; then
 		echo ==== Migrating to tmpfs...
 		if fuser -v "$TARGET" > /dev/null ; then
 			echo ERROR: "$TARGET" is in use
