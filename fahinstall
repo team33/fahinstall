@@ -273,7 +273,7 @@ fi
 #
 # Remove (old) [H]ardOCP-tagged lines from rc.local, if necessary
 #
-if grep '#\[H]ardOCP' /etc/rc.local 2> /dev/null ; then
+if grep '#\[H]ardOCP' /etc/rc.local > /dev/null 2>&1 ; then
 	echo ==== Cleaning-up rc.local ...
 	grep -v '#\[H]ardOCP' /etc/rc.local > /tmp/rclocal-$SUDO_USER.$$
 	mv /tmp/rclocal-$SUDO_USER.$$ $(readlink -e /etc/rc.local)
