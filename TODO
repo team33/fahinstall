@@ -1,5 +1,6 @@
 Last updated - 3/17/2013 (musky)
 
+- [tear] don't migrate if client is running
 - Langouste support
 - Integrate backup/restore scripts (fahcontrol?)
 - Start/Stop scripts (fahcontrol?)
