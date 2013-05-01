@@ -285,6 +285,14 @@ fi
 echo ==== Setting up shutdown scripts...
 cat > /etc/init.d/fahbackup-rc << EOF
 #!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          fahbackup-rc
+# Required-Start:    $local_fs
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Restore fah backup on startup and back the client up on shutdown and reboot.
+### END INIT INFO
 if [ "\$1" = "start" ]; then
 	su $SUDO_USER -c fahrestore
 	touch /var/lock/subsys/fahbackup-rc || true
