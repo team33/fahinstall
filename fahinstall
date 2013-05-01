@@ -363,12 +363,14 @@ sync
 if [ ! -d /var/lib/samba/usershares ]; then
 	echo ==== Setting up samba usershares, this may take a few minutes ...
 	groupadd -f sambashare
-	usermod -a -G sambashare $SUDO_USER
 	mkdir -m 1770 /var/lib/samba/usershares
 	chown root:sambashare /var/lib/samba/usershares
 	grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext -d /var/lib/samba | cut -f 1 -d \ ) /var/lib/samba/usershares
 	grep selinux /proc/mounts > /dev/null && setsebool -P samba_enable_home_dirs 1
 fi
+
+# add the user to usershare group
+usermod -a -G $(stat -c %G /var/lib/samba/usershares) $SUDO_USER
 
 #
 # restart samba, try both Ubuntu and Fedora ways;
