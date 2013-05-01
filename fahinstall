@@ -308,6 +308,9 @@ rm -f /var/lock/subsys/fahbackup-rc
 exit 0
 EOF
 chmod +x /etc/init.d/fahbackup-rc
+
+rm -f /etc/rc*.d/*fahbackup-rc
+
 ln -fs /etc/init.d/fahbackup-rc /etc/rc0.d/K10fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc1.d/K10fahbackup-rc
 ln -fs /etc/init.d/fahbackup-rc /etc/rc6.d/K10fahbackup-rc
