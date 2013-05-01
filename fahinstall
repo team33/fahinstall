@@ -174,7 +174,7 @@ echo ==== Applying OS tweaks ...
 #
 # Disable ondemand scaling governor
 #
-which update-rc.d > /dev/null 2>&1 && update-rc.d ondemand disable
+which update-rc.d > /dev/null 2>&1 && update-rc.d ondemand disable 2> /dev/null || true
 
 #
 # Disable irqbalance: try upstart, LSB and systemd methods
