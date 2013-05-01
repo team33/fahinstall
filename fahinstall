@@ -398,7 +398,7 @@ fi
 usermod -a -G $(stat -c %G /var/lib/samba/usershares) $SUDO_USER
 
 #
-# restart samba, try both Ubuntu and Fedora ways;
+# restart samba, try Ubuntu, Fedora and Debian ways;
 # additionally drop Fedora's 'stop' stdout so user
 # doesn't get confused by potential '[FAILED]'
 #
@@ -407,6 +407,8 @@ service smbd stop 2> /dev/null || true
 service smbd start 2> /dev/null || true
 service smb stop 2> /dev/null > /dev/null || true
 service smb start 2> /dev/null || true
+service samba stop 2> /dev/null || true
+service samba start 2> /dev/null || true
 sleep 1
 
 echo ==== Setting up fah share...
