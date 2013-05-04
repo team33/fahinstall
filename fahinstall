@@ -250,6 +250,10 @@ else
 	mount "$TARGET"
 
 	cd "$TARGET"
+
+	# create work directory
+	su $SUDO_USER -c "mkdir work"
+
 	#get fah files
 	echo ==== Downloading F@H files...
 	echo "====     client"
