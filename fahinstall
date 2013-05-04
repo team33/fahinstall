@@ -275,6 +275,11 @@ else
 fi
 
 #
+# Allow others (samba) to access work/ directory
+#
+chmod o+rx "$TARGET"/work
+
+#
 # Remove (old) [H]ardOCP-tagged lines from rc.local, if necessary
 #
 if grep '#\[H]ardOCP' /etc/rc.local > /dev/null 2>&1 ; then
