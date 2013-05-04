@@ -268,10 +268,12 @@ else
 	chmod +x FahCore*
 	chown -R $SUDO_USER:$(id -g $SUDO_USER) .
 
-	#run configonly
-	echo ==== Running F@H config...
-	su $SUDO_USER -c "./fah6 -configonly" || true
-	echo
+	# run configonly if we're on a terminal
+	if [ -t 0 ]; then
+		echo ==== Running F@H config...
+		su $SUDO_USER -c "./fah6 -configonly" || true
+		echo
+	fi
 fi
 
 #
