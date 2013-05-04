@@ -268,6 +268,28 @@ else
 	chmod +x FahCore*
 	chown -R $SUDO_USER:$(id -g $SUDO_USER) .
 
+	# preconfigure the client
+	su $SUDO_USER -c "cat > client.cfg" << EOF
+[settings]
+username=Anonymous
+team=0
+passkey=
+asknet=no
+machineid=1
+bigpackets=big
+extra_parms=-verbosity 9
+
+[http]
+active=no
+host=127.0.0.1
+port=8080
+EOF
+
+	# add -smp/-bigadv as necessary
+	CPUS=$(grep -c cpu[0-9] /proc/stat)
+	[ $CPUS -gt 1 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -smp/' client.cfg"
+	[ $CPUS -ge 16 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -bigadv/' client.cfg"
+
 	# run configonly if we're on a terminal
 	if [ -t 0 ]; then
 		echo ==== Running F@H config...
