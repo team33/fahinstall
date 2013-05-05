@@ -251,9 +251,6 @@ else
 
 	cd "$TARGET"
 
-	# create work directory
-	su $SUDO_USER -c "mkdir work"
-
 	#get fah files
 	echo ==== Downloading F@H files...
 	echo "====     client"
@@ -297,6 +294,9 @@ EOF
 		echo
 	fi
 fi
+
+# create work directory if it doesn't exist
+[ ! -d "$TARGET/work" ] && su $SUDO_USER -c "mkdir $TARGET/work"
 
 #
 # Allow others (samba) to access work/ directory
