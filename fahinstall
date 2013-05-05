@@ -314,6 +314,17 @@ if grep '#\[H]ardOCP' /etc/rc.local > /dev/null 2>&1 ; then
 	sync
 fi
 
+#
+# Remove manually-added fahrestore from rc.local, if necessary
+#
+if grep 'fahrestore' /etc/rc.local > /dev/null 2>&1 ; then
+	echo ==== Cleaning-up rc.local \(fahrestore\)...
+	grep -v 'fahrestore' /etc/rc.local > /tmp/rclocal-$SUDO_USER.$$
+	mv /tmp/rclocal-$SUDO_USER.$$ $(readlink -e /etc/rc.local)
+	chmod +x /etc/rc.local
+	sync
+fi
+
 #create backup script in /etc/init.d and symlinks
 echo ==== Setting up shutdown scripts...
 cat > /etc/init.d/fahbackup-rc << EOF
