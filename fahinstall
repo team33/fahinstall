@@ -307,7 +307,7 @@ chmod o+rx "$TARGET"/work
 # Remove (old) [H]ardOCP-tagged lines from rc.local, if necessary
 #
 if grep '#\[H]ardOCP' /etc/rc.local > /dev/null 2>&1 ; then
-	echo ==== Cleaning-up rc.local ...
+	echo ==== Cleaning-up rc.local \([H]ardOCP\)...
 	grep -v '#\[H]ardOCP' /etc/rc.local > /tmp/rclocal-$SUDO_USER.$$
 	mv /tmp/rclocal-$SUDO_USER.$$ $(readlink -e /etc/rc.local)
 	chmod +x /etc/rc.local
