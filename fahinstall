@@ -390,7 +390,8 @@ echo ==== Installing thekraken...
 rm -fr /tmp/thekraken-$SUDO_USER.$$
 mkdir /tmp/thekraken-$SUDO_USER.$$
 cd /tmp/thekraken-$SUDO_USER.$$
-download https://github.com/team33/thekraken/archive/$HARDOCP_BRANCH.tar.gz thekraken-$HARDOCP_BRANCH.tar.gz
+download https://github.com/team33/thekraken/archive/$HARDOCP_BRANCH.tar.gz thekraken-$HARDOCP_BRANCH.tar.gz \
+|| download http://darkswarm.org/thekraken/thekraken-$HARDOCP_BRANCH.tar.gz thekraken-$HARDOCP_BRANCH.tar.gz
 mkdir src
 cd src
 tar xzf ../*.tar.gz
