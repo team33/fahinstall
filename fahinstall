@@ -205,7 +205,7 @@ sync
 #update fstab
 echo ==== Configuring fstab...
 grep -v "$TARGET" /etc/fstab > /tmp/fstab-$SUDO_USER.$$
-echo "tmpfs  $TARGET  tmpfs  rw,uid=$(id -u $SUDO_USER),gid=$(id -g $SUDO_USER)  0  0" >> /tmp/fstab-$SUDO_USER.$$
+echo "tmpfs  $TARGET  tmpfs  rw,uid=$(id -u $SUDO_USER),gid=$(id -g $SUDO_USER),mpol=interleave  0  0" >> /tmp/fstab-$SUDO_USER.$$
 mv /tmp/fstab-$SUDO_USER.$$ $(readlink -e /etc/fstab)
 sync
 
