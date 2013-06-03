@@ -202,6 +202,13 @@ echo "kernel.print-fatal-signals=1" >> $SYSCTL_CONF
 echo "# [H]ardOCP ends" >> $SYSCTL_CONF
 sync
 
+# Disable automatic updates
+if [ -f /etc/apt/apt.conf.d/10periodic ]; then
+	awk '/^(APT::Periodic::Update-Package-Lists|APT::Periodic::Unattended-Upgrade) / { next } { print } END { print "APT::Periodic::Update-Package-Lists \"0\";" ; print "APT::Periodic::Unattended-Upgrade \"0\";" }' /etc/apt/apt.conf.d/10periodic > /tmp/10periodic-$SUDO_USER.$$
+	mv /tmp/10periodic-$SUDO_USER.$$ $(readlink -e /etc/apt/apt.conf.d/10periodic)
+	sync
+fi
+
 # Disable autostart of update notifier (Ubuntu)
 if [ -f /etc/xdg/autostart/update-notifier.desktop ]; then
 	awk '/^(NoDisplay|X-GNOME-Autostart-enabled)=/ { next } { print } END { print "NoDisplay=false" ; print "X-GNOME-Autostart-enabled=false" }' /etc/xdg/autostart/update-notifier.desktop > /tmp/update-notifier.desktop-$SUDO_USER.$$
