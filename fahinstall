@@ -240,6 +240,8 @@ if [ -d "$TARGET" ]; then
 		su $SUDO_USER -c "mkdir \"$TARGET\""
 		mount "$TARGET"
 		su $SUDO_USER -c fahrestore
+	else
+		mount "$TARGET" -o remount
 	fi
 else
 	#fresh installation
