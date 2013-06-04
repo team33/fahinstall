@@ -221,6 +221,7 @@ if [ -f /etc/xdg/autostart/update-notifier.desktop ]; then
 	awk '/^(NoDisplay|X-GNOME-Autostart-enabled)=/ { next } { print } END { print "NoDisplay=false" ; print "X-GNOME-Autostart-enabled=false" }' /etc/xdg/autostart/update-notifier.desktop > /tmp/update-notifier.desktop-$SUDO_USER.$$
 	mv /tmp/update-notifier.desktop-$SUDO_USER.$$ $(readlink -e /etc/xdg/autostart/update-notifier.desktop)
 	sync
+	killall update-notifier 2> /dev/null || true
 fi
 
 #update fstab
