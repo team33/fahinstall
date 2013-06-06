@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U] [-G] [-b \<branch\>]
+	echo -e \\t$0 [-U] [-b \<branch\>]
 	echo -e \\t$0 -V
 	echo -e \\t$0 -h
 }
@@ -36,7 +36,6 @@ download()
 OPT_VERSION=
 OPT_USAGE=
 OPT_NOUPDATE=
-OPT_NOGRUBUPDATE=
 OPT_BRANCH=
 
 while [ -n "$1" ]; do
@@ -51,10 +50,6 @@ while [ -n "$1" ]; do
 			;;
 		(-U)
 			OPT_NOUPDATE=1
-			shift
-			;;
-		(-G)
-			OPT_NOGRUBUPDATE=1
 			shift
 			;;
 		(-b)
@@ -85,7 +80,6 @@ fi
 # Set OPT_NORMAL if any regular (non -h -V) options are set
 #
 [ -n "$OPT_NOUPDATE" ] && OPT_NORMAL=1
-[ -n "$OPT_NOGRUBUPDATE" ] && OPT_NORMAL=1
 [ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
 
 #
@@ -237,10 +231,8 @@ if [ -f /etc/default/grub ]; then
 		cp --preserve /etc/default/grub /etc/default/grub-horde-$(date +%s).$$
 		mv /tmp/grub-$SUDO_USER.$$ $(readlink -e /etc/default/grub)
 		sync
-		if [ -z "$OPT_NOGRUBUPDATE" ]; then
-			update-grub
-			sync
-		fi
+		update-grub
+		sync
 	fi
 fi
 
