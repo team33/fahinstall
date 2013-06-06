@@ -224,6 +224,19 @@ if [ -f /etc/xdg/autostart/update-notifier.desktop ]; then
 	killall update-notifier 2> /dev/null || true
 fi
 
+# update grub configuration: do not hide menu, decrease default timeout, use text mode
+if [ -f /etc/default/grub ]; then
+	awk 'BEGIN { print "GRUB_GFXMODE=text" ; print "GRUB_TIMEOUT=5" } $1 ~ /^(GRUB_GFXMODE|GRUB_TIMEOUT|GRUB_HIDDEN_TIMEOUT|GRUB_HIDDEN_TIMEOUT_QUIET)(=.*$|$)/ { next } { print }' /etc/default/grub > /tmp/grub-$SUDO_USER.$$
+	if ! diff /tmp/grub-$SUDO_USER.$$ /etc/default/grub > /dev/null ; then
+		cp --preserve /etc/default/grub /etc/default/grub-horde-$(date +%s).$$
+		mv /tmp/grub-$SUDO_USER.$$ $(readlink -e /etc/default/grub)
+		sync
+		update-grub
+		sync
+	fi
+fi
+
+
 #update fstab
 echo ==== Configuring fstab...
 grep -v "$TARGET" /etc/fstab > /tmp/fstab-$SUDO_USER.$$
