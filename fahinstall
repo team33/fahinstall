@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# fahinstall 2.4
+# fahinstall 2.5
 # Folding@Home install script
 # 
 
@@ -100,7 +100,7 @@ fi
 # Process command-line options
 #
 [ -n "$OPT_USAGE" ] && usage && exit 0
-[ -n "$OPT_VERSION" ] && echo fahinstall 2.4 && exit 0
+[ -n "$OPT_VERSION" ] && echo fahinstall 2.5 && exit 0
 HARDOCP_BRANCH=$OPT_BRANCH
 
 [ -z "$HARDOCP_BRANCH" ] && HARDOCP_BRANCH=released
