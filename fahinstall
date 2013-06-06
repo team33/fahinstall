@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U] [-b <branch>]
+	echo -e \\t$0 [-U] [-b \<branch\>]
 	echo -e \\t$0 -V
 	echo -e \\t$0 -h
 }
