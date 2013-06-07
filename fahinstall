@@ -21,11 +21,11 @@ download()
 	local CURL_PARAM
 
 	[ -z "$1" ] && return 1
-	if which wget > /dev/null 2>&1 ; then
-		wget -nv ${2:+-O $2} "$1" || return $?
-	else
+	if which curl > /dev/null 2>&1 ; then
 		[ -z "$2" ] && CURL_PARAM="-O" || CURL_PARAM="-o $2"
 		curl -f -s -S -R -L $CURL_PARAM "$1" || return $?
+	else
+		wget -nv ${2:+-O $2} "$1" || return $?
 	fi
 	return 0
 }
