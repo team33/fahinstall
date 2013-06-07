@@ -152,7 +152,7 @@ else
 		cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
 		rm /tmp/$(basename $0)-$SUDO_USER.$$
 		sync
-		. $0 -b $HARDOCP_BRANCH
+		. $0 -b $HARDOCP_BRANCH $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R)
 		exit 0
 	fi
 fi
