@@ -260,7 +260,12 @@ download $FAHBACKUP_REPO/fahbackup
 download $FAHBACKUP_REPO/fahrestore
 chmod +x fahbackup fahrestore
 
-#sanitize initial state -- delete fah directory if empty
+#
+# Sanitize initial state -- delete fah directory if empty.
+# This code is needed as fahbackup (by design) refuses to process empty directories.
+# Having empty, non-tmpfs ~/fah directory would make us execute migration code
+# and eventually fail.
+#
 echo ==== Checking if fah/tmpfs installations are required...
 if [ -d "$TARGET" -a $(find "$TARGET" -mindepth 1 2> /dev/null | wc -l) = "0" ]; then
 	umount "$TARGET" 2> /dev/null || true
