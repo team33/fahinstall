@@ -260,6 +260,13 @@ download $FAHBACKUP_REPO/fahbackup
 download $FAHBACKUP_REPO/fahrestore
 chmod +x fahbackup fahrestore
 
+#sanitize initial state -- delete fah directory if empty
+echo ==== Checking if fah/tmpfs installations are required...
+if [ -d "$TARGET" -a $(find "$TARGET" -mindepth 1 2> /dev/null | wc -l) = "0" ]; then
+	umount "$TARGET" 2> /dev/null || true
+	rm -r "$TARGET"
+fi
+
 if [ -d "$TARGET" ]; then
 	#existing installation -- check if we need to migrate to tmpfs
 	if ! grep -E "^[^ ]+ $TARGET tmpfs " /proc/mounts > /dev/null ; then
