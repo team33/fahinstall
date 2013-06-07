@@ -134,11 +134,12 @@ if [ -n "$OPT_NOUPDATE" ]; then
 	echo ==== Not checking for updates
 else
 	echo ==== Checking for updates \($HARDOCP_BRANCH\)...
-	A=$(download $FAHINSTALL_REPO/fahinstall - | md5sum - | cut -f 1 -d \ )
+	download $FAHINSTALL_REPO/fahinstall /tmp/$(basename $0)-$SUDO_USER.$$
+	A=$(md5sum /tmp/$(basename $0)-$SUDO_USER.$$ | cut -f 1 -d \ )
 	B=$(md5sum $0 | cut -f 1 -d \ )
 	if [ "$A" != "$B" ]; then
 		echo  NOTICE: newer version of fahinstall may be available
-		echo "        and will be downloaded automatically"
+		echo "        and will be installed automatically"
 		echo
 		if [ -t 0 ]; then
 			echo  Press Ctrl+C to exit or Enter to proceed.
@@ -146,7 +147,6 @@ else
 				exit 1
 			fi
 		fi
-		download $FAHINSTALL_REPO/fahinstall /tmp/$(basename $0)-$SUDO_USER.$$
 		mv $0 $0-prev
 		cp -a $0-prev $0
 		cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
@@ -154,6 +154,8 @@ else
 		sync
 		. $0 -b $HARDOCP_BRANCH $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R)
 		exit 0
+	else
+		rm /tmp/$(basename $0)-$SUDO_USER.$$
 	fi
 fi
 
