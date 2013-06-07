@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U] [-R] [--force-smp-bigadv] [-b \<branch\>]
+	echo -e \\t$0 [-U] [-R] [-b \<branch\>]
 	echo -e \\t$0 -V
 	echo -e \\t$0 -h
 }
@@ -37,7 +37,6 @@ OPT_VERSION=
 OPT_USAGE=
 OPT_NOUPDATE=
 OPT_ROOTOVERRIDE=
-OPT_FORCESMPBA=
 OPT_BRANCH=
 
 while [ -n "$1" ]; do
@@ -56,10 +55,6 @@ while [ -n "$1" ]; do
 			;;
 		(-R)
 			OPT_ROOTOVERRIDE=1
-			shift
-			;;
-		(--force-smp-bigadv)
-			OPT_FORCESMPBA=1
 			shift
 			;;
 		(-b)
@@ -91,7 +86,6 @@ fi
 #
 [ -n "$OPT_NOUPDATE" ] && OPT_NORMAL=1
 [ -n "$OPT_ROOTOVERRIDE" ] && OPT_NORMAL=1
-[ -n "$OPT_FORCESMPBA" ] && OPT_NORMAL=1
 [ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
 
 #
@@ -333,8 +327,8 @@ EOF
 
 	# add -smp/-bigadv as necessary
 	CPUS=$(grep -c cpu[0-9] /proc/stat)
-	[ $CPUS -gt 1 -o -n "$OPT_FORCESMPBA" ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -smp/' client.cfg"
-	[ $CPUS -ge 16 -o -n "$OPT_FORCESMPBA" ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -bigadv/' client.cfg"
+	[ $CPUS -gt 1 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -smp/' client.cfg"
+	[ $CPUS -ge 16 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -bigadv/' client.cfg"
 
 	# run configonly if we're on a terminal
 	if [ -t 0 ]; then
