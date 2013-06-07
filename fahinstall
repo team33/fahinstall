@@ -322,7 +322,7 @@ extra_parms=-verbosity 9
 [http]
 active=no
 host=127.0.0.1
-port=8080
+port=8880
 EOF
 
 	# add -smp/-bigadv as necessary
