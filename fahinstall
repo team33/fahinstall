@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-b \<branch\>\|--branch \<branch\>]
+	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-b \<branch\>\|--branch \<branch\>]
 	echo -e \\t$0 -V\|--version
 	echo -e \\t$0 -h\|--help
 }
@@ -54,6 +54,7 @@ OPT_USAGE=
 OPT_NOUPDATE=
 OPT_ROOTOVERRIDE=
 OPT_NOFAH=
+OPT_ACCEPTEULA=
 OPT_BRANCH=
 
 while [ -n "$1" ]; do
@@ -76,6 +77,10 @@ while [ -n "$1" ]; do
 			;;
 		(-F|--no-fah)
 			OPT_NOFAH=1
+			shift
+			;;
+		(-a|--accept-eula)
+			OPT_ACCEPTEULA=1
 			shift
 			;;
 		(-b|--branch)
@@ -108,6 +113,7 @@ fi
 [ -n "$OPT_NOUPDATE" ] && OPT_NORMAL=1
 [ -n "$OPT_ROOTOVERRIDE" ] && OPT_NORMAL=1
 [ -n "$OPT_NOFAH" ] && OPT_NORMAL=1
+[ -n "$OPT_ACCEPTEULA" ] && OPT_NORMAL=1
 [ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
 
 #
@@ -123,6 +129,7 @@ fi
 #
 [ -n "$OPT_USAGE" ] && usage && exit 0
 [ -n "$OPT_VERSION" ] && echo fahinstall 2.9 && exit 0
+EULA_ACCEPTED=$OPT_ACCEPTEULA
 HARDOCP_BRANCH=$OPT_BRANCH
 
 [ -z "$HARDOCP_BRANCH" ] && HARDOCP_BRANCH=released
