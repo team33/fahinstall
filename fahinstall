@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-b \<branch\>\|--branch \<branch\>]
+	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-S\|--no-ssh] [-b \<branch\>\|--branch \<branch\>]
 	echo -e \\t$0 -V\|--version
 	echo -e \\t$0 -h\|--help
 }
@@ -55,6 +55,7 @@ OPT_NOUPDATE=
 OPT_ROOTOVERRIDE=
 OPT_NOFAH=
 OPT_ACCEPTEULA=
+OPT_NOSSH=
 OPT_BRANCH=
 
 while [ -n "$1" ]; do
@@ -81,6 +82,10 @@ while [ -n "$1" ]; do
 			;;
 		(-a|--accept-eula)
 			OPT_ACCEPTEULA=1
+			shift
+			;;
+		(-S|--no-ssh)
+			OPT_NOSSH=1
 			shift
 			;;
 		(-b|--branch)
@@ -114,6 +119,7 @@ fi
 [ -n "$OPT_ROOTOVERRIDE" ] && OPT_NORMAL=1
 [ -n "$OPT_NOFAH" ] && OPT_NORMAL=1
 [ -n "$OPT_ACCEPTEULA" ] && OPT_NORMAL=1
+[ -n "$OPT_NOSSH" ] && OPT_NORMAL=1
 [ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
 
 #
@@ -204,7 +210,8 @@ TARGET=$(eval echo ~$SUDO_USER/fah)
 #install software
 echo ==== Installing required software, this may take a few minutes ...
 if which apt-get > /dev/null 2>&1 ; then
-	PACKAGES_DEBIAN="openssh-server screen samba mcelog pastebinit build-essential"
+	PACKAGES_DEBIAN="screen samba mcelog pastebinit build-essential"
+	[ -z "$OPT_NOSSH" ] && PACKAGES_DEBIAN="openssh-server $PACKAGES_DEBIAN"
 	if ! apt-get install -qq $PACKAGES_DEBIAN ; then
 		# If installation fails -- update package indices and retry
 		apt-get update -qq
