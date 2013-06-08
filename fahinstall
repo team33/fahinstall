@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-b \<branch\>\|--branch \<branch\>]
+	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-b \<branch\>\|--branch \<branch\>]
 	echo -e \\t$0 -V\|--version
 	echo -e \\t$0 -h\|--help
 }
@@ -37,6 +37,7 @@ OPT_VERSION=
 OPT_USAGE=
 OPT_NOUPDATE=
 OPT_ROOTOVERRIDE=
+OPT_NOFAH=
 OPT_BRANCH=
 
 while [ -n "$1" ]; do
@@ -55,6 +56,10 @@ while [ -n "$1" ]; do
 			;;
 		(-R|--root-override)
 			OPT_ROOTOVERRIDE=1
+			shift
+			;;
+		(-F|--no-fah)
+			OPT_NOFAH=1
 			shift
 			;;
 		(-b|--branch)
@@ -86,6 +91,7 @@ fi
 #
 [ -n "$OPT_NOUPDATE" ] && OPT_NORMAL=1
 [ -n "$OPT_ROOTOVERRIDE" ] && OPT_NORMAL=1
+[ -n "$OPT_NOFAH" ] && OPT_NORMAL=1
 [ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
 
 #
@@ -152,7 +158,7 @@ else
 		cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
 		rm /tmp/$(basename $0)-$SUDO_USER.$$
 		sync
-		. $0 -b $HARDOCP_BRANCH $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R)
+		. $0 -b $HARDOCP_BRANCH $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R) $([ -n "$OPT_NOFAH" ] && echo -F)
 		exit 0
 	else
 		rm /tmp/$(basename $0)-$SUDO_USER.$$
@@ -302,27 +308,28 @@ fi
 
 cd "$TARGET"
 
-#get fah files
-echo ==== Downloading F@H files...
-if [ ! -x fah6 ]; then
-	echo "====     client"
-	download "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
-	mv FAH6.34-Linux64-SMP.exe fah6
-	chmod +x fah6
-fi
-for i in a3 a4 a5 ; do
-	if [ ! -x FahCore_$i.exe ]; then
-		echo "====     FahCore_$i"
-		download http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah - | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
-		echo
+if [ -z "$OPT_NOFAH" ]; then
+	#get fah files
+	echo ==== Downloading F@H files...
+	if [ ! -x fah6 ]; then
+		echo "====     client"
+		download "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
+		mv FAH6.34-Linux64-SMP.exe fah6
+		chmod +x fah6
 	fi
-done
-chmod +x FahCore*
-chown -R $SUDO_USER:$(id -g $SUDO_USER) .
+	for i in a3 a4 a5 ; do
+		if [ ! -x FahCore_$i.exe ]; then
+			echo "====     FahCore_$i"
+			download http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah - | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
+			echo
+		fi
+	done
+	chmod +x FahCore*
+	chown -R $SUDO_USER:$(id -g $SUDO_USER) .
 
-if [ ! -f client.cfg ]; then
-	# preconfigure the client
-	su $SUDO_USER -c "cat > client.cfg" << EOF
+	if [ ! -f client.cfg ]; then
+		# preconfigure the client
+		su $SUDO_USER -c "cat > client.cfg" << EOF
 [settings]
 username=Anonymous
 team=0
@@ -338,16 +345,17 @@ host=127.0.0.1
 port=8880
 EOF
 
-	# add -smp/-bigadv as necessary
-	CPUS=$(grep -c cpu[0-9] /proc/stat)
-	[ $CPUS -gt 1 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -smp/' client.cfg"
-	[ $CPUS -ge 16 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -bigadv/' client.cfg"
+		# add -smp/-bigadv as necessary
+		CPUS=$(grep -c cpu[0-9] /proc/stat)
+		[ $CPUS -gt 1 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -smp/' client.cfg"
+		[ $CPUS -ge 16 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -bigadv/' client.cfg"
 
-	# run configonly if we're on a terminal
-	if [ -t 0 ]; then
-		echo ==== Running F@H config...
-		su $SUDO_USER -c "./fah6 -configonly" || true
-		echo
+		# run configonly if we're on a terminal
+		if [ -t 0 ]; then
+			echo ==== Running F@H config...
+			su $SUDO_USER -c "./fah6 -configonly" || true
+			echo
+		fi
 	fi
 fi
 
