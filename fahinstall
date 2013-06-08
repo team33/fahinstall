@@ -30,6 +30,22 @@ download()
 	return 0
 }
 
+
+EULA_ACCEPTED=
+eula_note()
+{
+	[ -n "$EULA_ACCEPTED" ] && return 0
+	echo
+	echo Download requires that you accept Folding@Home EULA.
+	echo
+	echo Press ENTER if you agree to Folding@Home EULA\'s terms. Otherwise press Ctrl+C.
+	if ! read I ; then
+		return 1
+	fi
+	EULA_ACCEPTED=1
+	return 0
+}
+
 #
 # Parse command-line options
 #
@@ -313,6 +329,7 @@ if [ -z "$OPT_NOFAH" ]; then
 	echo ==== Downloading F@H files...
 	if [ ! -x fah6 ]; then
 		echo "====     client"
+		eula_note
 		download "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
 		mv FAH6.34-Linux64-SMP.exe fah6
 		chmod +x fah6
@@ -320,6 +337,7 @@ if [ -z "$OPT_NOFAH" ]; then
 	for i in a3 a4 a5 ; do
 		if [ ! -x FahCore_$i.exe ]; then
 			echo "====     FahCore_$i"
+			eula_note
 			download http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah - | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
 			echo
 		fi
