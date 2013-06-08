@@ -7,9 +7,9 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U] [-R] [-b \<branch\>]
-	echo -e \\t$0 -V
-	echo -e \\t$0 -h
+	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-b \<branch\>\|--branch \<branch\>]
+	echo -e \\t$0 -V\|--version
+	echo -e \\t$0 -h\|--help
 }
 
 #
@@ -41,23 +41,23 @@ OPT_BRANCH=
 
 while [ -n "$1" ]; do
 	case $1 in
-		(-V)
+		(-V|--version)
 			OPT_VERSION=1
 			shift
 			;;
-		(-h)
+		(-h|--help)
 			OPT_USAGE=1
 			shift
 			;;
-		(-U)
+		(-U|--no-update)
 			OPT_NOUPDATE=1
 			shift
 			;;
-		(-R)
+		(-R|--root-override)
 			OPT_ROOTOVERRIDE=1
 			shift
 			;;
-		(-b)
+		(-b|--branch)
 			shift
 			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
 				echo ERROR: option -b requires an argument
