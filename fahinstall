@@ -555,6 +555,7 @@ service samba start 2> /dev/null || true
 sleep 1
 
 echo ==== Setting up fah share...
+net usershare delete fah > /dev/null 2>&1 || true
 su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_ok=y\""
 chmod o+x $(eval echo ~$SUDO_USER)
 
