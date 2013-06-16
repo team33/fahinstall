@@ -177,7 +177,7 @@ else
 		echo "        and will be installed automatically"
 		echo
 		if [ -t 0 ]; then
-			echo  Press Ctrl+C to exit or Enter to proceed.
+			echo  Press Enter to proceed or Ctrl+C to exit.
 			if ! read I ; then
 				exit 1
 			fi
