@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-S\|--no-ssh] [-b \<branch\>\|--branch \<branch\>]
+	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-S\|--no-ssh] [-b \<branch\>\|--branch \<branch\>] [-t \<directory\>\|--tmpdir \<directory\>]
 	echo -e \\t$0 -V\|--version
 	echo -e \\t$0 -h\|--help
 }
@@ -57,6 +57,7 @@ OPT_NOFAH=
 OPT_ACCEPTEULA=
 OPT_NOSSH=
 OPT_BRANCH=
+OPT_TMPDIR=
 
 while [ -n "$1" ]; do
 	case $1 in
@@ -97,6 +98,15 @@ while [ -n "$1" ]; do
 			OPT_BRANCH=$1
 			shift
 			;;
+		(-t|--tmpdir)
+			shift
+			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
+				echo ERROR: option -t requires an argument
+				exit 1
+			fi
+			OPT_TMPDIR=$1
+			shift
+			;;
 		(-*)
 			echo ERROR: invalid option -- $1
 			exit 1
@@ -121,6 +131,7 @@ fi
 [ -n "$OPT_ACCEPTEULA" ] && OPT_NORMAL=1
 [ -n "$OPT_NOSSH" ] && OPT_NORMAL=1
 [ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
+[ -n "$OPT_TMPDIR" ] && OPT_NORMAL=1
 
 #
 # Check for command-line option conflicts
@@ -137,8 +148,10 @@ fi
 [ -n "$OPT_VERSION" ] && echo fahinstall 2.14 && exit 0
 EULA_ACCEPTED=$OPT_ACCEPTEULA
 HARDOCP_BRANCH=$OPT_BRANCH
+TMPDIR=$OPT_TMPDIR
 
 [ -z "$HARDOCP_BRANCH" ] && HARDOCP_BRANCH=released
+[ -z "$TMPDIR" ] && TMPDIR=/tmp
 
 #
 # Configure repositories
@@ -169,8 +182,8 @@ if [ -n "$OPT_NOUPDATE" ]; then
 	echo ==== Not checking for updates
 else
 	echo ==== Checking for updates \($HARDOCP_BRANCH\)...
-	download $FAHINSTALL_REPO/fahinstall /tmp/$(basename $0)-$SUDO_USER.$$
-	A=$(md5sum /tmp/$(basename $0)-$SUDO_USER.$$ | cut -f 1 -d \ )
+	download $FAHINSTALL_REPO/fahinstall "$TMPDIR/$(basename $0)-$SUDO_USER.$$"
+	A=$(md5sum "$TMPDIR/$(basename $0)-$SUDO_USER.$$" | cut -f 1 -d \ )
 	B=$(md5sum $0 | cut -f 1 -d \ )
 	if [ "$A" != "$B" ]; then
 		echo  NOTICE: newer version of fahinstall may be available
@@ -184,13 +197,13 @@ else
 		fi
 		mv $0 $0-prev
 		cp -a $0-prev $0
-		cat /tmp/$(basename $0)-$SUDO_USER.$$ > $0
-		rm /tmp/$(basename $0)-$SUDO_USER.$$
+		cat "$TMPDIR/$(basename $0)-$SUDO_USER.$$" > $0
+		rm "$TMPDIR/$(basename $0)-$SUDO_USER.$$"
 		sync
-		. $0 -b $HARDOCP_BRANCH $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R) $([ -n "$OPT_NOFAH" ] && echo -F)
+		. $0 -b $HARDOCP_BRANCH -t "$TMPDIR" $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R) $([ -n "$OPT_NOFAH" ] && echo -F)
 		exit 0
 	else
-		rm /tmp/$(basename $0)-$SUDO_USER.$$
+		rm "$TMPDIR/$(basename $0)-$SUDO_USER.$$"
 	fi
 fi
 
@@ -237,8 +250,8 @@ which systemctl > /dev/null 2>&1 && systemctl disable irqbalance 2> /dev/null ||
 #
 # Update sysctl configuration
 #
-awk '/#\[H]ardOCP/ { next } /^# \[H]ardOCP begins/ { P = 1 } { if (P != 1) print } /^# \[H]ardOCP ends/ { P = 0 }' /etc/sysctl.conf > /tmp/sysctl.conf-$SUDO_USER.$$ || true
-mv /tmp/sysctl.conf-$SUDO_USER.$$ $(readlink -e /etc/sysctl.conf)
+awk '/#\[H]ardOCP/ { next } /^# \[H]ardOCP begins/ { P = 1 } { if (P != 1) print } /^# \[H]ardOCP ends/ { P = 0 }' /etc/sysctl.conf > "$TMPDIR/sysctl.conf-$SUDO_USER.$$" || true
+mv "$TMPDIR/sysctl.conf-$SUDO_USER.$$" $(readlink -e /etc/sysctl.conf)
 sync
 if [ -d /etc/sysctl.d ]; then
 	SYSCTL_CONF=/etc/sysctl.d/99-fah.conf
@@ -255,25 +268,25 @@ sync
 
 # Disable automatic updates
 if [ -f /etc/apt/apt.conf.d/10periodic ]; then
-	awk '/^(APT::Periodic::Update-Package-Lists|APT::Periodic::Unattended-Upgrade) / { next } { print } END { print "APT::Periodic::Update-Package-Lists \"0\";" ; print "APT::Periodic::Unattended-Upgrade \"0\";" }' /etc/apt/apt.conf.d/10periodic > /tmp/10periodic-$SUDO_USER.$$
-	mv /tmp/10periodic-$SUDO_USER.$$ $(readlink -e /etc/apt/apt.conf.d/10periodic)
+	awk '/^(APT::Periodic::Update-Package-Lists|APT::Periodic::Unattended-Upgrade) / { next } { print } END { print "APT::Periodic::Update-Package-Lists \"0\";" ; print "APT::Periodic::Unattended-Upgrade \"0\";" }' /etc/apt/apt.conf.d/10periodic > "$TMPDIR/10periodic-$SUDO_USER.$$"
+	mv "$TMPDIR/10periodic-$SUDO_USER.$$" $(readlink -e /etc/apt/apt.conf.d/10periodic)
 	sync
 fi
 
 # Disable autostart of update notifier (Ubuntu)
 if [ -f /etc/xdg/autostart/update-notifier.desktop ]; then
-	awk '/^(NoDisplay|X-GNOME-Autostart-enabled)=/ { next } { print } END { print "NoDisplay=false" ; print "X-GNOME-Autostart-enabled=false" }' /etc/xdg/autostart/update-notifier.desktop > /tmp/update-notifier.desktop-$SUDO_USER.$$
-	mv /tmp/update-notifier.desktop-$SUDO_USER.$$ $(readlink -e /etc/xdg/autostart/update-notifier.desktop)
+	awk '/^(NoDisplay|X-GNOME-Autostart-enabled)=/ { next } { print } END { print "NoDisplay=false" ; print "X-GNOME-Autostart-enabled=false" }' /etc/xdg/autostart/update-notifier.desktop > "$TMPDIR/update-notifier.desktop-$SUDO_USER.$$"
+	mv "$TMPDIR/update-notifier.desktop-$SUDO_USER.$$" $(readlink -e /etc/xdg/autostart/update-notifier.desktop)
 	sync
 	killall update-notifier 2> /dev/null || true
 fi
 
 # update grub configuration: do not hide menu, decrease default timeout, use text mode
 if [ -f /etc/default/grub ]; then
-	cat /etc/default/grub | awk 'BEGIN { print "GRUB_GFXMODE=text" ; print "GRUB_TIMEOUT=5" } $1 ~ /^(GRUB_GFXMODE|GRUB_TIMEOUT|GRUB_HIDDEN_TIMEOUT|GRUB_HIDDEN_TIMEOUT_QUIET)(=.*$|$)/ { next } { print }' | sed -r '/^[[:space:]]*GRUB_CMDLINE_LINUX_DEFAULT[[:space:]]*=/{s/([[:space:]"])(splash)([[:space:]"])/\1\3/g;s/([[:space:]"])(quiet)([[:space:]"])/\1\3/g}' > /tmp/grub-$SUDO_USER.$$
-	if ! diff /tmp/grub-$SUDO_USER.$$ /etc/default/grub > /dev/null ; then
+	cat /etc/default/grub | awk 'BEGIN { print "GRUB_GFXMODE=text" ; print "GRUB_TIMEOUT=5" } $1 ~ /^(GRUB_GFXMODE|GRUB_TIMEOUT|GRUB_HIDDEN_TIMEOUT|GRUB_HIDDEN_TIMEOUT_QUIET)(=.*$|$)/ { next } { print }' | sed -r '/^[[:space:]]*GRUB_CMDLINE_LINUX_DEFAULT[[:space:]]*=/{s/([[:space:]"])(splash)([[:space:]"])/\1\3/g;s/([[:space:]"])(quiet)([[:space:]"])/\1\3/g}' > "$TMPDIR/grub-$SUDO_USER.$$"
+	if ! diff "$TMPDIR/grub-$SUDO_USER.$$" /etc/default/grub > /dev/null ; then
 		cp --preserve /etc/default/grub /etc/default/grub-horde-$(date +%s).$$
-		mv /tmp/grub-$SUDO_USER.$$ $(readlink -e /etc/default/grub)
+		mv "$TMPDIR/grub-$SUDO_USER.$$" $(readlink -e /etc/default/grub)
 		sync
 		update-grub
 		sync
@@ -283,9 +296,9 @@ fi
 
 #update fstab
 echo ==== Configuring fstab...
-grep -v "$TARGET" /etc/fstab > /tmp/fstab-$SUDO_USER.$$
-echo "tmpfs  $TARGET  tmpfs  rw,uid=$(id -u $SUDO_USER),gid=$(id -g $SUDO_USER),mpol=interleave  0  0" >> /tmp/fstab-$SUDO_USER.$$
-mv /tmp/fstab-$SUDO_USER.$$ $(readlink -e /etc/fstab)
+grep -v "$TARGET" /etc/fstab > "$TMPDIR/fstab-$SUDO_USER.$$"
+echo "tmpfs  $TARGET  tmpfs  rw,uid=$(id -u $SUDO_USER),gid=$(id -g $SUDO_USER),mpol=interleave  0  0" >> "$TMPDIR/fstab-$SUDO_USER.$$"
+mv "$TMPDIR/fstab-$SUDO_USER.$$" $(readlink -e /etc/fstab)
 sync
 
 #get restore and backup scripts
@@ -407,8 +420,8 @@ chmod o+rx "$TARGET"/work
 #
 if grep '#\[H]ardOCP' /etc/rc.local > /dev/null 2>&1 ; then
 	echo ==== Cleaning-up rc.local \([H]ardOCP\)...
-	grep -v '#\[H]ardOCP' /etc/rc.local > /tmp/rclocal-$SUDO_USER.$$
-	mv /tmp/rclocal-$SUDO_USER.$$ $(readlink -e /etc/rc.local)
+	grep -v '#\[H]ardOCP' /etc/rc.local > "$TMPDIR/rclocal-$SUDO_USER.$$"
+	mv "$TMPDIR/rclocal-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
 	chmod +x /etc/rc.local
 	sync
 fi
@@ -418,8 +431,8 @@ fi
 #
 if grep 'fahrestore' /etc/rc.local > /dev/null 2>&1 ; then
 	echo ==== Cleaning-up rc.local \(fahrestore\)...
-	grep -v 'fahrestore' /etc/rc.local > /tmp/rclocal-$SUDO_USER.$$
-	mv /tmp/rclocal-$SUDO_USER.$$ $(readlink -e /etc/rc.local)
+	grep -v 'fahrestore' /etc/rc.local > "$TMPDIR/rclocal-$SUDO_USER.$$"
+	mv "$TMPDIR/rclocal-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
 	chmod +x /etc/rc.local
 	sync
 fi
@@ -479,16 +492,16 @@ fi
 
 #set up cron job
 echo ==== Setting up cron job...
-(crontab -u $SUDO_USER -l 2> /dev/null | grep -v fahbackup || true) > /tmp/cron-$SUDO_USER.$$
-echo "00 * * * * fahbackup > /dev/null 2>&1"  >> /tmp/cron-$SUDO_USER.$$
-crontab -u $SUDO_USER /tmp/cron-$SUDO_USER.$$
-rm /tmp/cron-$SUDO_USER.$$
+(crontab -u $SUDO_USER -l 2> /dev/null | grep -v fahbackup || true) > "$TMPDIR/cron-$SUDO_USER.$$"
+echo "00 * * * * fahbackup > /dev/null 2>&1"  >> "$TMPDIR/cron-$SUDO_USER.$$"
+crontab -u $SUDO_USER "$TMPDIR/cron-$SUDO_USER.$$"
+rm "$TMPDIR/cron-$SUDO_USER.$$"
 
 #install thekraken
 echo ==== Installing thekraken...
-rm -fr /tmp/thekraken-$SUDO_USER.$$
-mkdir /tmp/thekraken-$SUDO_USER.$$
-cd /tmp/thekraken-$SUDO_USER.$$
+rm -fr "$TMPDIR/thekraken-$SUDO_USER.$$"
+mkdir "$TMPDIR/thekraken-$SUDO_USER.$$"
+cd "$TMPDIR/thekraken-$SUDO_USER.$$"
 download https://github.com/team33/thekraken/archive/$HARDOCP_BRANCH.tar.gz thekraken-$HARDOCP_BRANCH.tar.gz \
 || download http://darkswarm.org/thekraken/thekraken-$HARDOCP_BRANCH.tar.gz thekraken-$HARDOCP_BRANCH.tar.gz
 mkdir src
@@ -497,7 +510,7 @@ tar xzf ../*.tar.gz
 cd *
 make
 make install
-rm -r /tmp/thekraken-$SUDO_USER.$$
+rm -r "$TMPDIR/thekraken-$SUDO_USER.$$"
 
 #wrap cores
 echo ==== Wrapping cores...
@@ -520,11 +533,11 @@ echo ==== Configuring samba...
 #     usershare max shares = 100 (enable usershares)
 #     usershare allow guests = yes
 #
-testparm -s | grep -Ev '^	security =|^	usershare max shares =|^	usershare allow guests =' | sed -e 's/\[global]/&\n\tsecurity = share\n\tusershare max shares = 100\n\tusershare allow guests = yes/' > /tmp/smbconf-$SUDO_USER.$$
-grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext /etc/samba/smb.conf | cut -f 1 -d \ ) /tmp/smbconf-$SUDO_USER.$$
-if ! diff /tmp/smbconf-$SUDO_USER.$$ /etc/samba/smb.conf > /dev/null ; then
+testparm -s | grep -Ev '^	security =|^	usershare max shares =|^	usershare allow guests =' | sed -e 's/\[global]/&\n\tsecurity = share\n\tusershare max shares = 100\n\tusershare allow guests = yes/' > "$TMPDIR/smbconf-$SUDO_USER.$$"
+grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext /etc/samba/smb.conf | cut -f 1 -d \ ) "$TMPDIR/smbconf-$SUDO_USER.$$"
+if ! diff "$TMPDIR/smbconf-$SUDO_USER.$$" /etc/samba/smb.conf > /dev/null ; then
 	cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
-	mv /tmp/smbconf-$SUDO_USER.$$ $(readlink -e /etc/samba/smb.conf)
+	mv "$TMPDIR/smbconf-$SUDO_USER.$$" $(readlink -e /etc/samba/smb.conf)
 	sync
 fi
 
