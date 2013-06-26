@@ -375,6 +375,9 @@ extra_parms=-verbosity 9
 active=no
 host=127.0.0.1
 port=8880
+
+[clienttype]
+type=3
 EOF
 
 		# add -smp/-bigadv as necessary
