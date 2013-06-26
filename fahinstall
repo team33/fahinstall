@@ -200,7 +200,7 @@ else
 		cat "$TMPDIR/$(basename $0)-$SUDO_USER.$$" > $0
 		rm "$TMPDIR/$(basename $0)-$SUDO_USER.$$"
 		sync
-		. $0 -b $HARDOCP_BRANCH -t "$TMPDIR" $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R) $([ -n "$OPT_NOFAH" ] && echo -F)
+		. $0 -b $HARDOCP_BRANCH -t "$TMPDIR" $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R) $([ -n "$OPT_NOFAH" ] && echo -F) $([ -n "$OPT_ACCEPTEULA" ] && echo -a) $([ -n "$OPT_NOSSH" ] && echo -S)
 		exit 0
 	else
 		rm "$TMPDIR/$(basename $0)-$SUDO_USER.$$"
