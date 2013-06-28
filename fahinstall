@@ -293,6 +293,11 @@ if [ -f /etc/default/grub ]; then
 	fi
 fi
 
+# Disable processing of debian theme in GRUB to prevent spurious
+# "error: no video mode activated" -- LP #699802
+if [ -x /etc/grub.d/05_debian_theme ]; then
+	chmod -x /etc/grub.d/05_debian_theme
+fi
 
 #update fstab
 echo ==== Configuring fstab...
