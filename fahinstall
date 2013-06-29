@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# fahinstall 2.15
+# fahinstall 2.16
 # Folding@Home install script
 # 
 
@@ -145,7 +145,7 @@ fi
 # Process command-line options
 #
 [ -n "$OPT_USAGE" ] && usage && exit 0
-[ -n "$OPT_VERSION" ] && echo fahinstall 2.15 && exit 0
+[ -n "$OPT_VERSION" ] && echo fahinstall 2.16 && exit 0
 EULA_ACCEPTED=$OPT_ACCEPTEULA
 HARDOCP_BRANCH=$OPT_BRANCH
 TMPDIR=$OPT_TMPDIR
