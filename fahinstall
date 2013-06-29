@@ -281,6 +281,7 @@ if [ -f /etc/xdg/autostart/update-notifier.desktop ]; then
 	killall update-notifier 2> /dev/null || true
 fi
 
+UPDATE_GRUB=
 # update grub configuration: do not hide menu, decrease default timeout, use text mode
 if [ -f /etc/default/grub ]; then
 	cat /etc/default/grub | awk 'BEGIN { print "GRUB_TERMINAL=console" ; print "GRUB_TIMEOUT=5" } $1 ~ /^(GRUB_TERMINAL|GRUB_TIMEOUT|GRUB_HIDDEN_TIMEOUT|GRUB_HIDDEN_TIMEOUT_QUIET)(=.*$|$)/ { next } { print }' | sed -r '/^[[:space:]]*GRUB_CMDLINE_LINUX_DEFAULT[[:space:]]*=/{s/([[:space:]"])(splash)([[:space:]"])/\1\3/g;s/([[:space:]"])(quiet)([[:space:]"])/\1\3/g}' > "$TMPDIR/grub-$SUDO_USER.$$"
@@ -288,8 +289,7 @@ if [ -f /etc/default/grub ]; then
 		cp --preserve /etc/default/grub /etc/default/grub-horde-$(date +%s).$$
 		mv "$TMPDIR/grub-$SUDO_USER.$$" $(readlink -e /etc/default/grub)
 		sync
-		update-grub
-		sync
+		UPDATE_GRUB=1
 	fi
 fi
 
@@ -297,6 +297,13 @@ fi
 # "error: no video mode activated" -- LP #699802
 if [ -x /etc/grub.d/05_debian_theme ]; then
 	chmod -x /etc/grub.d/05_debian_theme
+	UPDATE_GRUB=1
+fi
+
+# Update GRUB if any changes were made
+if [ -n "$UPDATE_GRUB" ]; then
+	update-grub
+	sync
 fi
 
 #update fstab
