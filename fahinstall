@@ -463,7 +463,7 @@ cat > /etc/init.d/fahbackup-rc << EOF
 ### END INIT INFO
 if [ "\$1" = "start" ]; then
 	su $SUDO_USER -c fahrestore
-	touch /var/lock/subsys/fahbackup-rc || true
+	touch /var/lock/subsys/fahbackup-rc 2> /dev/null || true
 	sysctl -w vm.drop_caches=1 || true
 	exit 0
 fi
