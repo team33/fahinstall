@@ -472,6 +472,7 @@ if [ "\$1" != "stop" ]; then
 	exit 1
 fi
 su $SUDO_USER -c fahbackup
+while true ; do echo Data left to write: \$(sed -n '/^Dirty:/{s/^[^ ]* *//;p}' < /proc/meminfo)  ; sleep 1 ; done &
 rm -f /var/lock/subsys/fahbackup-rc
 exit 0
 EOF
