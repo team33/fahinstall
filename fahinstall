@@ -479,19 +479,25 @@ EOF
 chmod +x /etc/init.d/fahbackup-rc
 
 #
-# remove links: first insserv, then rm
+# remove links: first insserv, then update-rc.d, then rm
 #
 if which insserv > /dev/null 2>&1 ; then
 	insserv -r fahbackup-rc
 fi
 
+if which update-rc.d > /dev/null 2>&1 ; then
+	update-rc.d -f fahbackup-rc remove
+fi
+
 rm -f /etc/rc*.d/*fahbackup-rc
 
 #
-# add links, try insserv if available
+# add links, try insserv and update-rc.d, if available
 #
 if which insserv > /dev/null 2>&1 ; then
 	insserv fahbackup-rc
+elif which update-rc.d > /dev/null 2>&1 ; then
+	update-rc.d fahbackup-rc defaults
 else
 	ln -fs /etc/init.d/fahbackup-rc /etc/rc0.d/K10fahbackup-rc
 	ln -fs /etc/init.d/fahbackup-rc /etc/rc1.d/K10fahbackup-rc
