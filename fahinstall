@@ -361,9 +361,11 @@ else
 	mount "$TARGET"
 fi
 
-cd "$TARGET"
 
 if [ -z "$OPT_NOFAH" ]; then
+
+	cd "$TARGET"
+
 	#get fah files
 	echo ==== Downloading F@H files...
 	if [ ! -x fah6 ]; then
@@ -417,6 +419,8 @@ EOF
 			echo
 		fi
 	fi
+
+	cd -
 fi
 
 # create work directory if it doesn't exist
