@@ -294,6 +294,17 @@ if [ -f /etc/xdg/autostart/update-notifier.desktop ]; then
 	fi
 fi
 
+# Disable autostart of backup notifier (Ubuntu)
+if [ -f /etc/xdg/autostart/deja-dup-monitor.desktop ]; then
+	awk '/^(NoDisplay|X-GNOME-Autostart-enabled)=/ { next } { print } END { print "NoDisplay=false" ; print "X-GNOME-Autostart-enabled=false" }' /etc/xdg/autostart/deja-dup-monitor.desktop > "$TMPDIR/deja-dup-monitor.desktop-$SUDO_USER.$$"
+	if ! diff "$TMPDIR/deja-dup-monitor.desktop-$SUDO_USER.$$" /etc/xdg/autostart/deja-dup-monitor.desktop > /dev/null ; then
+		mv "$TMPDIR/deja-dup-monitor.desktop-$SUDO_USER.$$" $(readlink -e /etc/xdg/autostart/deja-dup-monitor.desktop)
+		sync
+		killall deja-dup-monitor 2> /dev/null || true
+		killall deja-dup 2> /dev/null || true
+	fi
+fi
+
 UPDATE_GRUB=
 # update grub configuration: do not hide menu, decrease default timeout, use text mode
 if [ -f /etc/default/grub ]; then
