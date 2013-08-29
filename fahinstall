@@ -166,6 +166,11 @@ FAHINSTALL_REPO=https://raw.github.com/team33/fahinstall/$HARDOCP_BRANCH
 trap "echo Premature exit." ERR
 
 #
+# Start in home directory
+#
+cd
+
+#
 # Impose a requirement on script's name
 #
 if [ "$(basename $0)" != "fahinstall" ]; then
@@ -320,6 +325,7 @@ rm -f fahbackup fahrestore
 download $FAHBACKUP_REPO/fahbackup
 download $FAHBACKUP_REPO/fahrestore
 chmod +x fahbackup fahrestore
+cd
 
 #
 # Sanitize initial state -- delete fah directory if empty.
@@ -419,6 +425,8 @@ EOF
 			echo
 		fi
 	fi
+
+	cd
 fi
 
 # create work directory if it doesn't exist
@@ -532,12 +540,14 @@ cd *
 make
 make install
 rm -r "$TMPDIR/thekraken-$SUDO_USER.$$"
+cd
 
 #wrap cores
 echo ==== Wrapping cores...
 cd "$TARGET"
 su $SUDO_USER -c "thekraken -u" || true
 su $SUDO_USER -c "thekraken -i"
+cd
 
 #
 # Given that systemd recognizes a SysV service only after starting it,
@@ -603,6 +613,7 @@ cd /usr/bin
 rm -f fahdiag
 download $FAHDIAG_REPO/fahdiag
 chmod +x fahdiag
+cd
 
 # Finishing up...
 echo
