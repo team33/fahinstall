@@ -419,8 +419,6 @@ EOF
 			echo
 		fi
 	fi
-
-	cd -
 fi
 
 # create work directory if it doesn't exist
