@@ -235,7 +235,7 @@ if which apt-get > /dev/null 2>&1 ; then
 		apt-get install -qq --no-upgrade $PACKAGES_DEBIAN
 	fi
 	apt-get install -qq --no-upgrade $(apt-cache --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances depends openssh-server |  awk '/Depends: [^<]/ { print $2 }')
-	apt-get install -qq --no-upgrade -o PackageManager::Configure=no -o DPkg::ConfigurePending=no  install openssh-server
+	apt-get install -qq --no-upgrade -o PackageManager::Configure=no -o DPkg::ConfigurePending=no openssh-server
 	[ -z "$OPT_NOSSH" ] && dpkg --configure --pending	
 fi
 which yum > /dev/null 2>&1 && yum -y -q install tar bzip2 screen samba mcelog gcc make
