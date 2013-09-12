@@ -97,18 +97,20 @@ while [ -n "$1" ]; do
 			shift
 			;;
 		(-b|--branch)
+			OPTNAME=$1
 			shift
 			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
-				echo ERROR: option -b requires an argument
+				echo ERROR: option $OPTNAME requires an argument
 				exit 1
 			fi
 			OPT_BRANCH=$1
 			shift
 			;;
 		(-t|--tmpdir)
+			OPTNAME=$1
 			shift
 			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
-				echo ERROR: option -t requires an argument
+				echo ERROR: option $OPTNAME requires an argument
 				exit 1
 			fi
 			OPT_TMPDIR=$1
