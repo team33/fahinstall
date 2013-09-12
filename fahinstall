@@ -156,12 +156,14 @@ fi
 #
 [ -n "$OPT_USAGE" ] && usage && exit 0
 [ -n "$OPT_VERSION" ] && echo fahinstall 2.17 && exit 0
-EULA_ACCEPTED=$OPT_ACCEPTEULA
-HARDOCP_BRANCH=$OPT_BRANCH
-TMPDIR=$OPT_TMPDIR
 
-[ -z "$HARDOCP_BRANCH" ] && HARDOCP_BRANCH=released
-[ -z "$TMPDIR" ] && TMPDIR=/tmp
+EULA_ACCEPTED=
+HARDOCP_BRANCH=released
+TMPDIR=/tmp
+
+[ -n "$OPT_ACCEPTEULA" ] && EULA_ACCEPTED=$OPT_ACCEPTEULA
+[ -n "$OPT_BRANCH" ] && HARDOCP_BRANCH=$OPT_BRANCH
+[ -n "$OPT_TMPDIR" ] && TMPDIR=$OPT_TMPDIR
 
 #
 # Configure repositories
