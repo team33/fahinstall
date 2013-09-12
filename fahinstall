@@ -60,6 +60,8 @@ OPT_NOLANGOUSTE=
 OPT_BRANCH=
 OPT_TMPDIR=
 
+OPT_NORMAL=
+
 while [ -n "$1" ]; do
 	case $1 in
 		(-V|--version)
