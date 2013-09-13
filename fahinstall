@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-S\|--no-ssh] [-L\|--no-langouste] [-b \<branch\>\|--branch \<branch\>] [-t \<directory\>\|--tmpdir \<directory\>]
+	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-S\|--no-ssh] [-L\|--no-langouste] [-b \<branch\>\|--branch \<branch\>] [-t \<directory\>\|--tmpdir \<directory\>] [--fah-username \<username\>] [--fah-team \<team-number\>\] [--fah-passkey \<passkey\>] [--fah-proxy-host \<proxy-host\>] [--fah-proxy-port \<proxy-port\>]
 	echo -e \\t$0 -V\|--version
 	echo -e \\t$0 -h\|--help
 }
@@ -59,8 +59,15 @@ OPT_NOSSH=
 OPT_NOLANGOUSTE=
 OPT_BRANCH=
 OPT_TMPDIR=
+OPT_FAHUSERNAME=
+OPT_FAHTEAM=
+OPT_FAHPASSKEY=
+OPT_FAHPROXYHOST=
+OPT_FAHPROXYPORT=
 
 OPT_NORMAL=
+OPT_PRECONFIG=
+OPT_PRECONFIG_PROXY=
 
 while [ -n "$1" ]; do
 	case $1 in
@@ -116,6 +123,56 @@ while [ -n "$1" ]; do
 			OPT_TMPDIR=$1
 			shift
 			;;
+		(--fah-username)
+			OPTNAME=$1
+			shift
+			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
+				echo ERROR: option $OPTNAME requires an argument
+				exit 1
+			fi
+			OPT_FAHUSERNAME=$1
+			shift
+			;;
+		(--fah-passkey)
+			OPTNAME=$1
+			shift
+			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
+				echo ERROR: option $OPTNAME requires an argument
+				exit 1
+			fi
+			OPT_FAHPASSKEY=$1
+			shift
+			;;
+		(--fah-team)
+			OPTNAME=$1
+			shift
+			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
+				echo ERROR: option $OPTNAME requires an argument
+				exit 1
+			fi
+			OPT_FAHTEAM=$1
+			shift
+			;;
+		(--fah-proxy-host)
+			OPTNAME=$1
+			shift
+			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
+				echo ERROR: option $OPTNAME requires an argument
+				exit 1
+			fi
+			OPT_FAHPROXYHOST=$1
+			shift
+			;;
+		(--fah-proxy-port)
+			OPTNAME=$1
+			shift
+			if [ -z "$1" -o "${1:0:1}" = "-" ]; then
+				echo ERROR: option $OPTNAME requires an argument
+				exit 1
+			fi
+			OPT_FAHPROXYPORT=$1
+			shift
+			;;
 		(-*)
 			echo ERROR: invalid option -- $1
 			exit 1
@@ -144,10 +201,37 @@ fi
 [ -n "$OPT_TMPDIR" ] && OPT_NORMAL=1
 
 #
+# Count FAH preconfiguration options:
+# - OPT_PRECONFIG of 111 means that username, team and passkey were provided
+# - OPT_PRECONFIG_PROXY of 11 means that proxy host and proxy port were provided
+#
+[ -n "$OPT_FAHUSERNAME" ] && OPT_NORMAL=1 && OPT_PRECONFIG=1$OPT_PRECONFIG
+[ -n "$OPT_FAHTEAM" ] && OPT_NORMAL=1 && OPT_PRECONFIG=1$OPT_PRECONFIG
+[ -n "$OPT_FAHPASSKEY" ] && OPT_NORMAL=1 && OPT_PRECONFIG=1$OPT_PRECONFIG
+[ -n "$OPT_FAHPROXYHOST" ] && OPT_NORMAL=1 && OPT_PRECONFIG_PROXY=1$OPT_PRECONFIG_PROXY
+[ -n "$OPT_FAHPROXYPORT" ] && OPT_NORMAL=1 && OPT_PRECONFIG_PROXY=1$OPT_PRECONFIG_PROXY
+
+#
 # Check for command-line option conflicts
 #
 if [ -n "$OPT_VERSION$OPT_USAGE$OPT_NORMAL" -a "$OPT_VERSION$OPT_USAGE$OPT_NORMAL" != "1" ]; then
 	echo ERROR: conflicting arguments
+	exit 1
+fi
+
+#
+# Ensure that proxy host and proxy port go together
+#
+if [ -n "$OPT_PRECONFIG_PROXY" -a "$OPT_PRECONFIG_PROXY" != "11" ]; then
+	echo ERROR: --fah-proxy-host and --fah-proxy-port must be provided
+	exit 1
+fi
+
+#
+# Ensure that any --fah-* option is accompanied by username, team and passkey
+#
+if [ -n "$OPT_PRECONFIG$OPT_PRECONFIG_PROXY" -a "$OPT_PRECONFIG" != "111" ]; then
+	echo ERROR: --fah-username, --fah-team and --fah-passkey must be provided if any --fah-"*" option is present
 	exit 1
 fi
 
@@ -160,10 +244,28 @@ fi
 EULA_ACCEPTED=
 HARDOCP_BRANCH=released
 TMPDIR=/tmp
+FAHUSERNAME=Anonymous
+FAHTEAM=0
+FAHPASSKEY=
+FAHPROXYACTIVE=no
+FAHPROXYHOST=127.0.0.1
+FAHPROXYPORT=8880
 
 [ -n "$OPT_ACCEPTEULA" ] && EULA_ACCEPTED=$OPT_ACCEPTEULA
 [ -n "$OPT_BRANCH" ] && HARDOCP_BRANCH=$OPT_BRANCH
 [ -n "$OPT_TMPDIR" ] && TMPDIR=$OPT_TMPDIR
+
+if [ "$OPT_PRECONFIG" = "111" ]; then
+	FAHUSERNAME=$OPT_FAHUSERNAME
+	FAHTEAM=$OPT_FAHTEAM
+	FAHPASSKEY=$OPT_FAHPASSKEY
+fi
+
+if [ "$OPT_PRECONFIG_PROXY" = "11" ]; then
+	FAHPROXYACTIVE=yes
+	FAHPROXYHOST=$OPT_FAHPROXYHOST
+	FAHPROXYPORT=$OPT_FAHPROXYPORT
+fi
 
 #
 # Configure repositories
@@ -507,18 +609,18 @@ if [ -z "$OPT_NOFAH" ]; then
 		# preconfigure the client
 		su $SUDO_USER -c "cat > client.cfg" << EOF
 [settings]
-username=Anonymous
-team=0
-passkey=
+username=$FAHUSERNAME
+team=$FAHTEAM
+passkey=$FAHPASSKEY
 asknet=no
 machineid=1
 bigpackets=big
 extra_parms=-verbosity 9
 
 [http]
-active=no
-host=127.0.0.1
-port=8880
+active=$FAHPROXYACTIVE
+host=$FAHPROXYHOST
+port=$FAHPROXYPORT
 
 [clienttype]
 type=3
@@ -530,7 +632,7 @@ EOF
 		[ $CPUS -ge 24 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -bigadv/' client.cfg"
 
 		# run configonly if we're on a terminal
-		if [ -t 0 ]; then
+		if [ -t 0 -a "$OPT_PRECONFIG" != "111" ]; then
 			echo ==== Running F@H config...
 			su $SUDO_USER -c "./fah6 -configonly" || true
 			echo
