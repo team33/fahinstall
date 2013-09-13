@@ -812,7 +812,11 @@ service smb stop 2> /dev/null > /dev/null || true
 service smb start 2> /dev/null || true
 service samba stop 2> /dev/null || true
 service samba start 2> /dev/null || true
-sleep 1
+
+while ! netstat -tln | grep :445[^0-9] > /dev/null ; do
+	echo ==== Waiting for samba to start...
+	sleep 1
+done
 
 echo ==== Setting up fah share...
 net usershare delete fah > /dev/null 2>&1 || true
