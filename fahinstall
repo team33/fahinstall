@@ -30,8 +30,6 @@ download()
 	return 0
 }
 
-
-EULA_ACCEPTED=
 eula_note()
 {
 	[ -n "$EULA_ACCEPTED" ] && return 0
