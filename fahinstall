@@ -502,7 +502,7 @@ else
 	mount "$TARGET"
 fi
 
-if [ -z "$OPT_NOLANGOUSTE" ]; then
+if [ -z "$OPT_NOLANGOUSTE" -a ! -f "$TARGET"/.nolangouste ]; then
 	# Download and install Langouste
 	echo ==== Installing Langouste...
 
