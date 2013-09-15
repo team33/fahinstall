@@ -45,6 +45,24 @@ eula_note()
 }
 
 #
+# execute command with external shell; retry if unsuccessful (up to 5 times total)
+#
+try()
+{
+	local I=5
+	
+	while true ; do
+		$SHELL -c "$1" && return 0
+		I=$(($I-1))
+		[ $I = 0 ] && break
+		echo ==== WARNING: "$1" failed, retrying in 5 seconds...
+		sleep 5
+		echo ==== Retrying now, this may take a while...
+	done
+	return 1
+}
+
+#
 # Parse command-line options
 #
 OPT_VERSION=
@@ -341,14 +359,14 @@ TARGET=$(eval echo ~$SUDO_USER/fah)
 echo ==== Installing required software, this may take a few minutes ...
 if which apt-get > /dev/null 2>&1 ; then
 	PACKAGES_DEBIAN="screen samba mcelog pastebinit build-essential"
-	if ! apt-get install -qq --no-upgrade $PACKAGES_DEBIAN ; then
+	if ! try "apt-get install -qq --no-upgrade $PACKAGES_DEBIAN" ; then
 		# If installation fails -- update package indices and retry
-		apt-get update -qq
-		apt-get install -qq --no-upgrade $PACKAGES_DEBIAN
+		try "apt-get update -qq"
+		try "apt-get install -qq --no-upgrade $PACKAGES_DEBIAN"
 	fi
-	apt-get install -qq --no-upgrade $(apt-cache --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances depends openssh-server |  awk '/Depends: [^<]/ { print $2 }')
-	apt-get install -qq --no-upgrade -o PackageManager::Configure=no -o DPkg::ConfigurePending=no openssh-server
-	[ -z "$OPT_NOSSH" ] && dpkg --configure --pending	
+	try "apt-get install -qq --no-upgrade $(apt-cache --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances depends openssh-server |  awk '/Depends: [^<]/ { printf "%s ",$2 }')"
+	try "apt-get install -qq --no-upgrade -o PackageManager::Configure=no -o DPkg::ConfigurePending=no openssh-server"
+	[ -z "$OPT_NOSSH" ] && dpkg --configure --pending > /dev/null
 fi
 which yum > /dev/null 2>&1 && yum -y -q install tar bzip2 screen samba mcelog gcc make
 
