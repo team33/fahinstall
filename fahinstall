@@ -614,7 +614,8 @@ if [ -z "$OPT_NOFAH" ]; then
 		if [ ! -x FahCore_$i.exe ]; then
 			echo "====     FahCore_$i"
 			eula_note
-			download http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah - | dd skip=1 status=noxfer | bzip2 -cd > FahCore_$i.exe
+			download http://www.stanford.edu/~pande/Linux/AMD64/beta/Core_$i.fah - | dd skip=1 status=noxfer | bzip2 -cd > "$TMPDIR/FahCore_$i.exe-$SUDO_USER.$$"
+			mv "$TMPDIR/FahCore_$i.exe-$SUDO_USER.$$" FahCore_$i.exe
 			echo
 		fi
 	done
