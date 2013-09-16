@@ -289,6 +289,7 @@ fi
 FAHBACKUP_REPO=https://raw.github.com/team33/fahbackup/$HARDOCP_BRANCH
 FAHDIAG_REPO=https://raw.github.com/team33/fahdiag/$HARDOCP_BRANCH
 FAHINSTALL_REPO=https://raw.github.com/team33/fahinstall/$HARDOCP_BRANCH
+HFMINSTALL_REPO=https://raw.github.com/team33/hfminstall/$HARDOCP_BRANCH
 
 #
 # Produce appropriate message on premature exit
@@ -472,12 +473,13 @@ if ! diff "$TMPDIR/fstab-$SUDO_USER.$$" /etc/fstab > /dev/null ; then
 fi
 
 #get restore and backup scripts
-echo ==== Setting up backup and restore scripts...
+echo ==== Setting up backup, restore and hfminstall scripts...
 cd /usr/bin
-rm -f fahbackup fahrestore
+rm -f fahbackup fahrestore hfminstall
 download $FAHBACKUP_REPO/fahbackup
 download $FAHBACKUP_REPO/fahrestore
-chmod +x fahbackup fahrestore
+download $HFMINSTALL_REPO/hfminstall
+chmod +x fahbackup fahrestore hfminstall
 cd
 
 #
