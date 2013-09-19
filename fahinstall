@@ -63,6 +63,19 @@ try()
 }
 
 #
+# sync dirty data to disk
+# notify the user if syncing more than 10MB
+#
+sync()
+{
+	local DIRTY
+	DIRTY=$(sed -rn '/^Dirty:/{s/^[^ ]* *([0-9]*).*$/\1/;p}' < /proc/meminfo)
+	[ $DIRTY -gt 10240 ] && echo ==== Syncing, please wait...
+	/bin/sync
+	return $?
+}
+
+#
 # Parse command-line options
 #
 OPT_VERSION=
