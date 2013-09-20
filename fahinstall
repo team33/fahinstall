@@ -845,8 +845,11 @@ service smb start 2> /dev/null || true
 service samba stop 2> /dev/null || true
 service samba start 2> /dev/null || true
 
+echo ==== Waiting for samba to start...
+I=60
 while ! netstat -tln | grep :445[^0-9] > /dev/null ; do
-	echo ==== Waiting for samba to start...
+	I=$(($I-1))
+	[ $I = -1 ] && false
 	sleep 1
 done
 
