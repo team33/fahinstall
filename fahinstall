@@ -600,12 +600,27 @@ if [ -z "$OPT_NOLANGOUSTE" -a ! -f "$TARGET"/.nolangouste ]; then
 	fi
 
 	# Configure Langouste
-	if [ ! -f /etc/langouste3/langouste3.conf ]; then
-		cat > /etc/langouste3/langouste3.conf << EOF
+	cat > "$TMPDIR/langouste3.conf-$SUDO_USER.$$" << EOF
+#
+# Langouste configuration file
+# Details and examples can be found in /etc/langouste3/langouste3.conf.example
+#
 listen_port=8880
 user=$SUDO_USER
+EOF
+	if [ -f /etc/langouste3/langouste3.conf ]; then
+		grep -Ev '^[[:space:]]*(listen_port|user)[[:space:]]*=|^[[:space:]]*#|^[[:space:]]*$' /etc/langouste3/langouste3.conf 2> /dev/null | tr -d '\r' >> "$TMPDIR/langouste3.conf-$SUDO_USER.$$"
+		if ! diff "$TMPDIR/langouste3.conf-$SUDO_USER.$$" /etc/langouste3/langouste3.conf > /dev/null ; then
+			cp --preserve /etc/langouste3/langouste3.conf /etc/langouste3/langouste3.conf-horde-$(date +%s).$$
+			mv "$TMPDIR/langouste3.conf-$SUDO_USER.$$" $(readlink -e /etc/langouste3/langouste3.conf)
+			sync
+		fi
+	else
+		cat >> "$TMPDIR/langouste3.conf-$SUDO_USER.$$" << EOF
 enable_lazy_signals=1
 EOF
+		mv "$TMPDIR/langouste3.conf-$SUDO_USER.$$" /etc/langouste3/langouste3.conf
+		sync
 	fi
 
 	cp /usr/share/langouste3/langouste-helper.sh "$TARGET"
