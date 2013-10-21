@@ -559,8 +559,8 @@ if [ -z "$OPT_NOLANGOUSTE" -a ! -f "$TARGET"/.nolangouste ]; then
 	# Remove Langouste startup from rc.local
 	#
 	if grep 'langouste3' /etc/rc.local > /dev/null 2>&1 ; then
-		grep -v 'langouste3' /etc/rc.local > "$TMPDIR/rclocal-$SUDO_USER.$$"
-		mv "$TMPDIR/rclocal-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
+		grep -v 'langouste3' /etc/rc.local > "$TMPDIR/rc.local-$SUDO_USER.$$"
+		mv "$TMPDIR/rc.local-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
 		chmod +x /etc/rc.local
 		sync
 		killall langouste3 2> /dev/null || true
@@ -687,8 +687,8 @@ chmod o+rx "$TARGET"/work
 #
 if grep '#\[H]ardOCP' /etc/rc.local > /dev/null 2>&1 ; then
 	echo ==== Cleaning-up rc.local \([H]ardOCP\)...
-	grep -v '#\[H]ardOCP' /etc/rc.local > "$TMPDIR/rclocal-$SUDO_USER.$$"
-	mv "$TMPDIR/rclocal-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
+	grep -v '#\[H]ardOCP' /etc/rc.local > "$TMPDIR/rc.local-$SUDO_USER.$$"
+	mv "$TMPDIR/rc.local-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
 	chmod +x /etc/rc.local
 	sync
 fi
@@ -698,8 +698,8 @@ fi
 #
 if grep 'fahrestore' /etc/rc.local > /dev/null 2>&1 ; then
 	echo ==== Cleaning-up rc.local \(fahrestore\)...
-	grep -v 'fahrestore' /etc/rc.local > "$TMPDIR/rclocal-$SUDO_USER.$$"
-	mv "$TMPDIR/rclocal-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
+	grep -v 'fahrestore' /etc/rc.local > "$TMPDIR/rc.local-$SUDO_USER.$$"
+	mv "$TMPDIR/rc.local-$SUDO_USER.$$" $(readlink -e /etc/rc.local)
 	chmod +x /etc/rc.local
 	sync
 fi
