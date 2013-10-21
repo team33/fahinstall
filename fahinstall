@@ -478,7 +478,7 @@ fi
 
 #update fstab
 echo ==== Configuring fstab...
-grep -v "$TARGET" /etc/fstab > "$TMPDIR/fstab-$SUDO_USER.$$"
+grep -Ev "/fah[[:space:]]+tmpfs[[:space:]]" /etc/fstab > "$TMPDIR/fstab-$SUDO_USER.$$"
 echo "tmpfs  $TARGET  tmpfs  rw,uid=$(id -u $SUDO_USER),gid=$(id -g $SUDO_USER),mpol=interleave  0  0" >> "$TMPDIR/fstab-$SUDO_USER.$$"
 if ! diff "$TMPDIR/fstab-$SUDO_USER.$$" /etc/fstab > /dev/null ; then
 	mv "$TMPDIR/fstab-$SUDO_USER.$$" $(readlink -e /etc/fstab)
