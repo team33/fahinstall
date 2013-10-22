@@ -826,7 +826,7 @@ echo ==== Configuring samba...
 #     usershare max shares = 100 (enable usershares)
 #     usershare allow guests = yes
 #
-testparm -s | grep -Ev '^	security =|^	usershare max shares =|^	usershare allow guests =' | sed -e 's/\[global]/&\n\tsecurity = share\n\tusershare max shares = 100\n\tusershare allow guests = yes/' > "$TMPDIR/smbconf-$SUDO_USER.$$"
+testparm -s | grep -Ev '^	security =|^	usershare max shares =|^	usershare allow guests =|^        guest account =' | sed -e "s/\[global]/&\n\tsecurity = share\n\tusershare max shares = 100\n\tusershare allow guests = yes\n\tguest account = $SUDO_USER/" > "$TMPDIR/smbconf-$SUDO_USER.$$"
 grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext /etc/samba/smb.conf | cut -f 1 -d \ ) "$TMPDIR/smbconf-$SUDO_USER.$$"
 if ! diff "$TMPDIR/smbconf-$SUDO_USER.$$" /etc/samba/smb.conf > /dev/null ; then
 	cp --preserve /etc/samba/smb.conf /etc/samba/smb.conf-horde-$(date +%s).$$
