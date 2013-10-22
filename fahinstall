@@ -535,6 +535,8 @@ else
 	mount "$TARGET"
 fi
 
+[ -e /tmp/fah ] && chown -R $SUDO_USER:$(id -g $SUDO_USER) /tmp/fah
+
 if [ -z "$OPT_NOLANGOUSTE" -a ! -f "$TARGET"/.nolangouste ]; then
 	# Download and install Langouste
 	echo ==== Installing Langouste...
