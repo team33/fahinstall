@@ -692,7 +692,8 @@ EOF
 		# run configonly if we're on a terminal
 		if [ -t 0 -a "$OPT_PRECONFIG" != "111" ]; then
 			echo ==== Running F@H config...
-			su $SUDO_USER -c "./fah6 -configonly" || true
+			su $SUDO_USER -c "./fah6 -configonly" && exit 1 || RET=$?
+			[ $RET != 143 ] && exit $RET
 			echo
 		fi
 	fi
