@@ -7,7 +7,7 @@
 usage()
 {
 	echo Usage:
-	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-S\|--no-ssh] [-L\|--no-langouste] [-b \<branch\>\|--branch \<branch\>] [-t \<directory\>\|--tmpdir \<directory\>] [--fah-username \<username\>] [--fah-team \<team-number\>\] [--fah-passkey \<passkey\>] [--fah-proxy-host \<proxy-host\>] [--fah-proxy-port \<proxy-port\>]
+	echo -e \\t$0 [-U\|--no-update] [-R\|--root-override] [-F\|--no-fah] [-a\|--accept-eula] [-S\|--no-ssh] [-L\|--no-langouste] [-b \<branch\>\|--branch \<branch\>] [-t \<directory\>\|--tmpdir \<directory\>] [--fah-reconfigure] [--fah-username \<username\>] [--fah-team \<team-number\>\] [--fah-passkey \<passkey\>] [--fah-proxy-host \<proxy-host\>] [--fah-proxy-port \<proxy-port\>]
 	echo -e \\t$0 -V\|--version
 	echo -e \\t$0 -h\|--help
 }
@@ -88,6 +88,7 @@ OPT_NOSSH=
 OPT_NOLANGOUSTE=
 OPT_BRANCH=
 OPT_TMPDIR=
+OPT_FAHRECONFIGURE=
 OPT_FAHUSERNAME=
 OPT_FAHTEAM=
 OPT_FAHPASSKEY=
@@ -150,6 +151,10 @@ while [ -n "$1" ]; do
 				exit 1
 			fi
 			OPT_TMPDIR=$1
+			shift
+			;;
+		(--fah-reconfigure)
+			OPT_FAHRECONFIGURE=1
 			shift
 			;;
 		(--fah-username)
@@ -228,6 +233,7 @@ fi
 [ -n "$OPT_NOLANGOUSTE" ] && OPT_NORMAL=1
 [ -n "$OPT_BRANCH" ] && OPT_NORMAL=1
 [ -n "$OPT_TMPDIR" ] && OPT_NORMAL=1
+[ -n "$OPT_FAHRECONFIGURE" ] && OPT_NORMAL=1
 
 #
 # Count FAH preconfiguration options:
@@ -349,7 +355,7 @@ else
 		cat "$TMPDIR/$(basename $0)-$SUDO_USER.$$" > $0
 		rm "$TMPDIR/$(basename $0)-$SUDO_USER.$$"
 		sync
-		. $0 -b $HARDOCP_BRANCH -t "$TMPDIR" $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R) $([ -n "$OPT_NOFAH" ] && echo -F) $([ -n "$OPT_ACCEPTEULA" ] && echo -a) $([ -n "$OPT_NOSSH" ] && echo -S) $([ -n "$OPT_NOLANGOUSTE" ] && echo -L) $([ "$OPT_PRECONFIG" = "111" ] && echo --fah-username $OPT_FAHUSERNAME --fah-team $OPT_FAHTEAM --fah-passkey $OPT_FAHPASSKEY) $([ "$OPT_PRECONFIG_PROXY" = "11" ] && echo --fah-proxy-host $OPT_FAHPROXYHOST --fah-proxy-port $OPT_FAHPROXYPORT)
+		. $0 -b $HARDOCP_BRANCH -t "$TMPDIR" $([ -n "$OPT_ROOTOVERRIDE" ] && echo -R) $([ -n "$OPT_NOFAH" ] && echo -F) $([ -n "$OPT_ACCEPTEULA" ] && echo -a) $([ -n "$OPT_NOSSH" ] && echo -S) $([ -n "$OPT_NOLANGOUSTE" ] && echo -L) $([ -n "$OPT_FAHRECONFIGURE" ] && echo --fah-reconfigure) $([ "$OPT_PRECONFIG" = "111" ] && echo --fah-username $OPT_FAHUSERNAME --fah-team $OPT_FAHTEAM --fah-passkey $OPT_FAHPASSKEY) $([ "$OPT_PRECONFIG_PROXY" = "11" ] && echo --fah-proxy-host $OPT_FAHPROXYHOST --fah-proxy-port $OPT_FAHPROXYPORT)
 		exit 0
 	else
 		rm "$TMPDIR/$(basename $0)-$SUDO_USER.$$"
@@ -680,6 +686,9 @@ EOF
 		[ $CPUS -gt 1 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -smp/' client.cfg"
 		[ $CPUS -ge 24 ] && su $SUDO_USER -c "sed -i 's/^extra_parms.*$/& -bigadv/' client.cfg"
 
+		OPT_FAHRECONFIGURE=1
+	fi
+	if [ -n "$OPT_FAHRECONFIGURE" ]; then
 		# run configonly if we're on a terminal
 		if [ -t 0 -a "$OPT_PRECONFIG" != "111" ]; then
 			echo ==== Running F@H config...
