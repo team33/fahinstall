@@ -647,8 +647,7 @@ if [ -z "$OPT_NOFAH" ]; then
 	if [ ! -x fah6 ]; then
 		echo "====     client"
 		eula_note
-		download "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe"
-		mv FAH6.34-Linux64-SMP.exe fah6
+		download "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.34-Linux64-SMP.exe" fah6
 		chmod +x fah6
 	fi
 	for i in a3 a4 a5 ; do
