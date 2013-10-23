@@ -18,15 +18,18 @@ usage()
 #
 download()
 {
-	local CURL_PARAM
+	local OUTFILE
+	local TMPFILE
 
 	[ -z "$1" ] && return 1
+	[ -z "$2" ] && OUTFILE=$(basename "$1") || OUTFILE="$2"
+	[ "$2" = "-" ] && TMPFILE=- || TMPFILE="$OUTFILE-$SUDO_USER.$$"
 	if which curl > /dev/null 2>&1 ; then
-		[ -z "$2" ] && CURL_PARAM="-O" || CURL_PARAM="-o $2"
-		curl -f -s -S -R -L $CURL_PARAM "$1" || return $?
+		curl -f -s -S -R -L -o "$TMPFILE" "$1" || return $?
 	else
-		wget -nv ${2:+-O $2} "$1" || return $?
+		wget -nv -O "$TMPFILE" "$1" || return $?
 	fi
+	[ "$2" = "-" ] || mv "$TMPFILE" "$OUTFILE"
 	return 0
 }
 
