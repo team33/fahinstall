@@ -391,7 +391,10 @@ if which apt-get > /dev/null 2>&1 ; then
 	try "apt-get install -qq --no-upgrade -o PackageManager::Configure=no -o DPkg::ConfigurePending=no openssh-server"
 	[ -z "$OPT_NOSSH" ] && dpkg --configure --pending > /dev/null
 fi
-which yum > /dev/null 2>&1 && yum -y -q install tar bzip2 screen samba mcelog gcc make
+if which yum > /dev/null 2>&1 ; then
+	yum -y -q install tar bzip2 screen samba mcelog gcc make yum-utils
+	yum -y -q install $(repoquery --whatprovides  lsb-core-noarch --qf '%{name}' | uniq)
+fi
 
 echo ==== Applying OS tweaks ...
 
