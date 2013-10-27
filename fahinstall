@@ -751,14 +751,14 @@ if [ "\$1" = "start" ]; then
 	sysctl -w vm.drop_caches=1 || true
 	exit 0
 fi
-if [ "\$1" != "stop" ]; then
-	echo Unknown command -- \$1 >&2
-	exit 1
+if [ "\$1" = "stop" ]; then
+	su $SUDO_USER -c fahbackup
+	while true ; do echo Data left to write: \$(sed -n '/^Dirty:/{s/^[^ ]* *//;p}' < /proc/meminfo)  ; sleep 1 ; done &
+	rm -f /var/lock/subsys/fahbackup-rc
+	exit 0
 fi
-su $SUDO_USER -c fahbackup
-while true ; do echo Data left to write: \$(sed -n '/^Dirty:/{s/^[^ ]* *//;p}' < /proc/meminfo)  ; sleep 1 ; done &
-rm -f /var/lock/subsys/fahbackup-rc
-exit 0
+echo Unknown command -- \$1 >&2
+exit 1
 EOF
 chmod +x /etc/init.d/fahbackup-rc
 
