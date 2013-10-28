@@ -484,7 +484,12 @@ fi
 
 # Update GRUB if any changes were made
 if [ -n "$UPDATE_GRUB" ]; then
-	update-grub
+	if which update-grub > /dev/null 2>&1 ; then
+		update-grub
+	else
+		cat /boot/grub2/grub.cfg > /dev/null
+		grub2-mkconfig --output=/boot/grub2/grub.cfg
+	fi
 	sync
 fi
 
