@@ -590,7 +590,7 @@ if [ -z "$OPT_NOLANGOUSTE" -a ! -f "$TARGET"/.nolangouste ]; then
 	# remove links: first insserv, then update-rc.d, then rm
 	#
 	if which insserv > /dev/null 2>&1 ; then
-		insserv -r langouste3
+		insserv -r langouste3 2> /dev/null || true
 	fi
 
 	if which update-rc.d > /dev/null 2>&1 ; then
