@@ -895,6 +895,9 @@ net usershare delete fah > /dev/null 2>&1 || true
 su $SUDO_USER -c "net usershare add fah \"$TARGET\" \"\" \"Everyone:f\" \"guest_ok=y\""
 chmod o+x $(eval echo ~$SUDO_USER)
 
+# add the user to groups that own log files
+[ -f /var/log/syslog ] && usermod -a -G $(stat -c %G /var/log/syslog) $SUDO_USER
+[ -f /var/log/messages ] && usermod -a -G $(stat -c %G /var/log/messages) $SUDO_USER
 
 #get fahdiag
 echo ==== Installing fahdiag...
