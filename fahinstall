@@ -375,6 +375,12 @@ if [ "$SUDO_USER" = "fah" -o \( -z "$OPT_ROOTOVERRIDE" -a "$SUDO_USER" = "root" 
 	exit 1
 fi
 
+LC_SUDO_USER=$(echo $SUDO_USER | tr A-Z a-z)
+if [ "$SUDO_USER" != "$LC_SUDO_USER" ]; then
+	echo ERROR: user \'$SUDO_USER\' contains capital letters. Create user name without capital letters and try again.
+	exit 1
+fi
+
 TARGET=$(eval echo ~$SUDO_USER/fah)
 
 
