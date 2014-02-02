@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# fahinstall 2.27
+# fahinstall 2.28
 # Folding@Home install script
 # 
 
@@ -277,7 +277,7 @@ fi
 # Process command-line options
 #
 [ -n "$OPT_USAGE" ] && usage && exit 0
-[ -n "$OPT_VERSION" ] && echo fahinstall 2.27 && exit 0
+[ -n "$OPT_VERSION" ] && echo fahinstall 2.28 && exit 0
 
 EULA_ACCEPTED=
 HARDOCP_BRANCH=released
