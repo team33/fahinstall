@@ -436,6 +436,8 @@ echo "# [H]ardOCP begins" >> $SYSCTL_CONF
 echo "kernel.randomize_va_space=0" >> $SYSCTL_CONF
 echo "kernel.panic=3600" >> $SYSCTL_CONF
 echo "kernel.print-fatal-signals=1" >> $SYSCTL_CONF
+echo "kernel.sysrq=1" >> $SYSCTL_CONF
+echo "kernel.core_uses_pid=1" >> "$SYSCTL_CONF"
 echo "# [H]ardOCP ends" >> $SYSCTL_CONF
 sync
 
