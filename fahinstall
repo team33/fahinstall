@@ -513,6 +513,7 @@ if [ $LINUX -le 132643 ]; then
 fi
 
 echo "tmpfs  $TARGET  tmpfs  rw,uid=$(id -u $SUDO_USER),gid=$(id -g $SUDO_USER)$MPOL  0  0" >> "$TMPDIR/fstab-$SUDO_USER.$$"
+grep selinux /proc/mounts > /dev/null && chcon $(ls --scontext /etc/fstab | cut -f 1 -d \ ) "$TMPDIR/fstab-$SUDO_USER.$$"
 if ! diff "$TMPDIR/fstab-$SUDO_USER.$$" /etc/fstab > /dev/null ; then
 	mv "$TMPDIR/fstab-$SUDO_USER.$$" $(readlink -e /etc/fstab)
 	sync
